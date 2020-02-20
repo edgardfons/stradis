@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="car text-center">
+    <div class="card-body">
+        <h1>Welcome to Scheduler</h1>
+        <p>This is a university teacher scheduler tool</p>
+        <a href="{% url 'scheduler:index' %}" class="btn btn-dark">View avaliable polls</a>
+    </div>
+</div>
+
+{% endblock %}
