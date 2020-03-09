@@ -1,3 +1,2 @@
 # stradis
-Stradis is a university scheduler. Designed to help the staff to assign teachers and courses to classrooms more easily and efficient
-Seu commit remoto deu certo!!!!!!!!!
+Stradis is a university scheduler. Designed to assign teachers and courses to classrooms more easily and efficient.
