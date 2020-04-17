@@ -16,24 +16,14 @@
 </p>
 {% endif %}
 
-<form action="{% url 'scheduler:schedule' %}" method="post">
+<form action="{% url 'scheduler:schedule' %}" method="post" enctype="multipart/form-data">
     
     {% csrf_token %}
-    <p>{{objeto.nome}}</p>
-    <div class="mb-3">
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
-            <label class="form-check-label" for="gridRadios1">
-              Manual
-            </label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
-            <label class="form-check-label" for="gridRadios2">
-              Planilha
-            </label>
-          </div>
-    </div>
+
+    <input type="file" name="file" value="Professores"/>
+    <input type="file" value="Disciplinas"/>
+    <input type="file" value="Salas"/>
+    <input type="file" value="Horarios"/>
 
     <div class="mb-3"></div>
 

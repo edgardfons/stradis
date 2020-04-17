@@ -48,3 +48,17 @@ def simpleLP():
 
 def egMyModel():
     
+    x = LpVariable("x", 0, 3)
+    y = LpVariable("y", 0, 1)
+
+    prob = LpProblem("myProblem", LpMinimize)
+
+    prob += x + y <= 2
+    prob += -4*x + y
+
+    print(prob)
+
+    print(LpStatus[prob.solve()])
+
+    print(f"Variable X: {x.varValue}")
+    print(f"Variable Y: {y.varValue}")
