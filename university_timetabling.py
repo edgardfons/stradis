@@ -15,6 +15,8 @@ num_terms = 4
 terms = [0, 1, 2, 3]
 
 num_events = 10
+num_events_simples = 8
+num_events_geminado = 2
 events = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 events_simples = [0, 1, 3, 5, 6, 7, 8, 9]
 events_geminados = [2, 4]
@@ -250,7 +252,7 @@ num_conflicts = (num_events * num_events * num_days * num_hours)
 num_exits_term = (num_terms * num_days * num_hours)
 num_exceding_upper_bounds = (num_terms * num_days * num_hours)
 
-ones_bounds = [1] * ( 
+num_variables = ( 
   num_scheduled +
   num_enforce_schedule +
   num_start_event_geminado +
@@ -259,7 +261,11 @@ ones_bounds = [1] * (
   num_exits_term
 )
 
+ones_bounds = [1] * num_variables
+
 none_bounds = [None] * num_exceding_upper_bounds
+num_variables += num_exceding_upper_bounds
+num_days_hours = num_days * num_hours
 
 upper_bounds = np.concatenate( (np.array(ones_bounds), np.array(none_bounds)) ).tolist()
 
@@ -282,8 +288,61 @@ c_vector = np.concatenate( (
 
 ), dtype=int).tolist()
 
-print("c: ")
-print(c_vector)
+# print("c: ")
+# print(c_vector)
+
+
+
+# Contraints modeleing (equal bounding)
+indexes_equal_bounds = []
+res_equal_bounds = []
+
+
+# (1)
+
+print("Numder of variables: " + str(num_variables))
+
+indexes_equal_bounds = np.zeros((num_events, num_variables), dtype=int)
+for a in range(num_events):
+  for b in range(num_days_hours):
+    indexes_equal_bounds[a][(num_days_hours * a) + b] = 1
+
+res_equal_bounds = np.concatenate( (np.array(res_equal_bounds, dtype=int), np.array(events_number, dtype=int)), dtype=int)
+
+
+# (7)
+
+indexes_equal_bounds_aux = np.zeros((num_events_simples * num_hours, num_variables), dtype=int)
+
+
+for a in range(num_events_simples):
+  for b in range(num_hours):
+
+  indexes_equal_bounds_aux[(num_days_hours * a) + b][ num_scheduled +  ] = 1
+  
+
+  for b in range(num_hours):
+    indexes_equal_bounds_aux[(num_days_hours * a) + b][] = 1
+
+for a in range(num_events_simples * num_hours):
+  for b in range(num_hours):
+    indexes_equal_bounds_aux[a][(num_days_hours * a) + b] = 1
+
+
+res_equal_bounds = np.concatenate( (np.array(res_equal_bounds, dtype=int), np.zeros(num_events_simples * num_hours, dtype=int)), dtype=int)
+indexes_equal_bounds = np.concatenate( (np.array(indexes_equal_bounds, dtype=int), indexes_equal_bounds_aux), dtype=int)
+
+print("indexes_equal_bounds: ")
+print(indexes_equal_bounds)
+
+print("res_equal_bounds: ")
+print(res_equal_bounds)
+
+# Contraints modeleing (unequal bounding)
+
+# Solve model and show simplified results
+# res = optimize.linprog(c_vector, A_ub=, b_ub=, A_eq=, b_eq=, bounds=(0, upper_bounds), method='simplex')
+# print(res)
 
 
 
