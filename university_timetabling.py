@@ -200,15 +200,15 @@ events_pre_schedule = [
 
 # num_events * num_events
 events_conflict = [
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 8, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 3, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 4, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
@@ -263,9 +263,28 @@ none_bounds = [None] * num_exceding_upper_bounds
 
 upper_bounds = np.concatenate( (np.array(ones_bounds), np.array(none_bounds)) ).tolist()
 
-print("Upper bounds: ")
-print(upper_bounds)
-
 # Creating the C vector
+'''
+
+x' = [ x: |E|*|D|*|H| | f: |E|*|H| | g: |E|*|D|*|H| | -b: |M|*|D|*|H| | -c: |E|*|E|*|D|*|H| | y: |M|*|D|*|H| | -q: |M|*|D|*|H| ]
+
+'''
+
+first_zeros_num = num_scheduled + num_enforce_schedule + num_idle_periods
+
+c_vector = np.concatenate( (
+
+  np.zeros(first_zeros_num, dtype=int),
+  np.full(num_idle_periods, idle_weight, dtype=int),
+  np.array([ envent_conflict_weight * events_conflict[i][j] if i > j else 0 for h in range(num_hours) for d in range(num_days) for j in range(num_events) for i in range(num_events) ]),
+  np.zeros(num_exits_term, dtype=int),
+  np.full(num_exceding_upper_bounds, exceding_weight, dtype=int)
+
+), dtype=int).tolist()
+
+print("c: ")
+print(c_vector)
+
+
 
 
