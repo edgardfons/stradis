@@ -291,8 +291,6 @@ c_vector = np.concatenate( (
 # print("c: ")
 # print(c_vector)
 
-
-
 # Contraints modeleing (equal bounding)
 indexes_equal_bounds = []
 res_equal_bounds = []
@@ -314,29 +312,52 @@ res_equal_bounds = np.concatenate( (np.array(res_equal_bounds, dtype=int), np.ar
 
 indexes_equal_bounds_aux = np.zeros((num_events_simples * num_hours, num_variables), dtype=int)
 
-
-for a in range(num_events_simples):
+i = 0 # Matrix transversiong needs improving
+for a in events_simples:
   for b in range(num_hours):
 
-  indexes_equal_bounds_aux[(num_days_hours * a) + b][ num_scheduled +  ] = 1
-  
+    j = num_scheduled + (a * num_hours) + b
+    indexes_equal_bounds_aux[i][j] = events_number[a]
 
-  for b in range(num_hours):
-    indexes_equal_bounds_aux[(num_days_hours * a) + b][] = 1
+    # print(f'Number {events_number[a]} assign to postion f_{a}{b}')
 
-for a in range(num_events_simples * num_hours):
-  for b in range(num_hours):
-    indexes_equal_bounds_aux[a][(num_days_hours * a) + b] = 1
+    for d in range(num_days):
+      w = (a * num_days * num_hours) + (d * num_hours) + b
+      indexes_equal_bounds_aux[i][w] = -1
+      # print(f'Number -1 assign to postion x_{a}{d}{b}')
+
+    i = i + 1
 
 
 res_equal_bounds = np.concatenate( (np.array(res_equal_bounds, dtype=int), np.zeros(num_events_simples * num_hours, dtype=int)), dtype=int)
 indexes_equal_bounds = np.concatenate( (np.array(indexes_equal_bounds, dtype=int), indexes_equal_bounds_aux), dtype=int)
 
-print("indexes_equal_bounds: ")
-print(indexes_equal_bounds)
+# (10)
 
-print("res_equal_bounds: ")
-print(res_equal_bounds)
+indexes_equal_bounds_aux = np.zeros((num_events_geminado, num_variables), dtype=int)
+i = 0
+for a in events_geminados:
+  for d in range(num_days):
+    for h in range(num_hours):
+      j = num_scheduled + num_enforce_schedule + (a * num_days * num_hours) + (d * num_hours) + h
+
+      if h not in final_of_day:
+        indexes_equal_bounds_aux[i][j] = 1
+        print(f'Number 1 assign to postion g_{a}{d}{h}')
+
+  i = i + 1
+
+    
+
+
+res_equal_bounds = np.concatenate( (np.array(res_equal_bounds, dtype=int), np.ones(num_events_geminado, dtype=int)), dtype=int)
+indexes_equal_bounds = np.concatenate( (np.array(indexes_equal_bounds, dtype=int), indexes_equal_bounds_aux), dtype=int)
+
+# print("indexes_equal_bounds: ")
+# print(indexes_equal_bounds)
+
+# print("res_equal_bounds: ")
+# print(res_equal_bounds)
 
 # Contraints modeleing (unequal bounding)
 
