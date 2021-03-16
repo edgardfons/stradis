@@ -1,6 +1,10 @@
 import numpy as np
 from scipy import optimize
 
+def call_simplex(results):
+  print(f'Rodando {results.nit}')
+
+
 # Creating the sets
 num_days = 5
 days_of_week = [0, 1, 2, 3, 4]
@@ -252,6 +256,8 @@ num_conflicts = (num_events * num_events * num_days * num_hours)
 num_exits_term = (num_terms * num_days * num_hours)
 num_exceding_upper_bounds = (num_terms * num_days * num_hours)
 
+num_days_hours = num_days * num_hours
+
 num_variables = ( 
   num_scheduled +
   num_enforce_schedule +
@@ -261,13 +267,12 @@ num_variables = (
   num_exits_term
 )
 
-ones_bounds = [1] * num_variables
+ones_bounds = [(0,1)] * num_variables
 
-none_bounds = [None] * num_exceding_upper_bounds
+none_bounds = [(0,None)] * num_exceding_upper_bounds
 num_variables += num_exceding_upper_bounds
-num_days_hours = num_days * num_hours
 
-upper_bounds = np.concatenate( (np.array(ones_bounds), np.array(none_bounds)) ).tolist()
+bounds = np.concatenate( (np.array(ones_bounds), np.array(none_bounds)) ).tolist()
 
 # Creating the C vector
 '''
@@ -276,7 +281,7 @@ x' = [ x: |E|*|D|*|H| | f: |E|*|H| | g: |E|*|D|*|H| | -b: |M|*|D|*|H| | -c: |E|*
 
 '''
 
-first_zeros_num = num_scheduled + num_enforce_schedule + num_idle_periods
+first_zeros_num = num_scheduled + num_enforce_schedule + num_start_event_geminado
 
 c_vector = np.concatenate( (
 
@@ -298,7 +303,7 @@ res_equal_bounds = []
 
 # (1)
 
-print("Numder of variables: " + str(num_variables))
+
 
 indexes_equal_bounds = np.zeros((num_events, num_variables), dtype=int)
 for a in range(num_events):
@@ -343,27 +348,55 @@ for a in events_geminados:
 
       if h not in final_of_day:
         indexes_equal_bounds_aux[i][j] = 1
-        print(f'Number 1 assign to postion g_{a}{d}{h}')
+        # print(f'Number 1 assign to postion g_{a}{d}{h}')
 
   i = i + 1
-
-    
 
 
 res_equal_bounds = np.concatenate( (np.array(res_equal_bounds, dtype=int), np.ones(num_events_geminado, dtype=int)), dtype=int)
 indexes_equal_bounds = np.concatenate( (np.array(indexes_equal_bounds, dtype=int), indexes_equal_bounds_aux), dtype=int)
 
-# print("indexes_equal_bounds: ")
-# print(indexes_equal_bounds)
-
-# print("res_equal_bounds: ")
-# print(res_equal_bounds)
-
 # Contraints modeleing (unequal bounding)
 
+indexes_unequal_bounds = []
+res_unequal_bounds = []
+
+# (2)
+
+size = num_events * num_days * num_hours
+indexes_unequal_bounds_aux = np.zeros((size, num_variables), dtype=int)
+i = 0
+for a in events_geminados:
+  for d in range(num_days):
+    for h in range(num_hours):
+      j = num_scheduled + num_enforce_schedule + (a * num_days * num_hours) + (d * num_hours) + h
+
+      if h not in final_of_day:
+        indexes_equal_bounds_aux[i][j] = 1
+        # print(f'Number 1 assign to postion x_{a}{d}{h}')
+
+  i = i + 1
+
+events_availability
+res_unequal_bounds = np.concatenate( (np.array(res_unequal_bounds, dtype=int), np.ones(num_events_geminado, dtype=int)), dtype=int)
+indexes_unequal_bounds = np.concatenate( (np.array(indexes_unequal_bounds, dtype=int), indexes_unequal_bounds_aux), dtype=int)
+
+
+
+print("Numder of variables: " + str(len(c_vector)))
+
+print("indexes_equal_bounds size: " + str(indexes_equal_bounds.shape))
+
+print("res_equal_bounds size: " + str(res_equal_bounds.shape))
+
+print("indexes_unequal_bounds size: " + str(indexes_unequal_bounds.shape))
+
+print("res_unequal_bounds size: " + str(res_unequal_bounds.shape))
+
+
 # Solve model and show simplified results
-# res = optimize.linprog(c_vector, A_ub=, b_ub=, A_eq=, b_eq=, bounds=(0, upper_bounds), method='simplex')
-# print(res)
+res = optimize.linprog(c_vector, A_eq=indexes_equal_bounds, b_eq=res_equal_bounds, bounds=bounds, method='simplex', callback=call_simplex)
+print(res)
 
 
 
