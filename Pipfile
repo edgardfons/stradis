@@ -9,7 +9,12 @@ faker = "*"
 [packages]
 pulp = "*"
 numpy = "*"
+
+# Flask group of dependencies
 Flask = "*"
+flask_ckeditor = "*"
+flask_wtf = "*"
+wtforms = "*"
 
 [requires]
 python_version = "3.8.5"
