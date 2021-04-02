@@ -8,6 +8,12 @@ Utilizando um modelo de programação linear, esta aplicação se utiliza de inf
 
 ## Dependências
 
+### Resolvedor do modelo PL
+
+O Stradis utiliza o GLPK.
+
+### Ferramenta Web
+
 A linguagem Python vêm instalada por padrão em diversas distribuições Linux. Caso seu sistema operacional seja diferente, deve-se encontrar uma forma de instala-lo.
 
 Este projeto utiliza ambientes virtuais com a ferramenta [Pipenv](https://pipenv.pypa.io/en/latest/). Com python instalado, use o comando pip para instalar o Pipenv.
