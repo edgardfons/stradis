@@ -1,7 +1,7 @@
 # Stradis
 
-Stradis is a university course scheduler. Designed to assign teachers and courses to classrooms more easily and efficient.
+Stradis é um programador de horários de cursos universitários. Construido para alocar professores e aulas em horários e, no futuro, salas de forma fácil e eficiente.
 
-The university classroom assignment problem is a well researched and experimented issue releated to education providing institutions.
+O problema de grades de horários é um assunto, fortmente pesquisado e experimentado, relacionado a instituições de ensino.
 
-Using a linear programming model, this application uses the input data (a list of teachers, courses, classrooms, etc.) to create course assigment options. Arranged in spreadsheets, the assigments link a course to a teacher bases on the input data, e.g., professor X can teach courses A and B, based on professor X's and other teachers prefences, he is assigned to course A while other teacher is assigned to course B.
+Utilizando um modelo de programação linear, esta aplicação se utiliza de informações de entrada (listas de professores, cursos, salas de aula, etc.) para criar opções de grades de horário.
