@@ -9,6 +9,7 @@ faker = "*"
 [packages]
 pulp = "*"
 numpy = "*"
+Flask = "*"
 
 [requires]
 python_version = "3.8.5"
