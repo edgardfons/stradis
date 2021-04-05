@@ -1,5 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Stradis</h1>
+<h1>Bem vindos ao <span class="logo">Stradis</span></h1>
+<p class="stradisGuide">Stradis é um programador de horários de cursos universitários. Construido para alocar
+  professores e aulas em horários e, no futuro, salas de forma fácil e eficiente.
+
+  O problema de grades de horários é um assunto, fortmente pesquisado e experimentado, relacionado a instituições
+  de ensino.
+
+  Utilizando um modelo de programação linear, esta aplicação se utiliza de informações de entrada (listas de
+  professores, cursos, salas de aula, etc.) para criar opções de grades de horário.</p>
+
+<p class="stradisGuide">Para gerar uma programação, você deve cadastrar todas as informações necessárias:
+  Disciplinas, Professores, Horários, Cursos e Turmas. Para cadastrar, basta acessar o menu superior e 
+  em cada respectiva tela haverá uma área de "Cadastrar". Caso deseje editar, ou remover alguma informação,
+  você pode usar a mesma tela na área de "Pesquisar".
+</p>
+
+<p class="stradisGuide">Quando estiver cadastrado todas as informações necessárias, estaremos prontos para gerar 
+  uma programação! Clique no botão abaixo "Gerar" e iremos processar todas as informações que foram cadastradas!
+</p>
+
+
+<div class="d-flex justify-content-center col-md-12 mt-3">
+  <button type="submit" class="btn btn-stradis col-md-6 disabled">Gerar</button>
+</div>
+
 {% endblock %}

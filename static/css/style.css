@@ -1,0 +1,91 @@
+html,
+body {
+    height: 100%;
+    font-family: 'Lato', sans-serif;
+    box-sizing: border-box;
+    font-weight: normal;
+    font-style: normal; 
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: 'Lexend', sans-serif;
+}
+
+.logo,
+.navbar-brand {
+    font-family: 'Metamorphous', cursive;
+    color: #E76F51 !important;
+}
+
+#navLogo {
+    font-size: 25px;
+}
+
+.stradisGuideContainer {
+    flex-direction: column;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: red;
+    border-width: 1px;
+}
+
+.stradisGuide {
+    font-size: 20px;
+    text-align: justify;
+}
+
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
+#footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #264653;
+    padding: 15px;
+    flex-shrink: 0;
+    color: #fff;
+}
+
+
+.btn-stradis {
+    background-color: #2A9D8F;
+    color: #fff;
+    border-color: #2A9D8F;
+}
+
+.btn-stradis:hover, .btn-stradis:active, .btn-stradis:focus {
+    background-color: #30b5a6;
+    color: #fff;
+    border-color: #30b5a6;
+}
+
+.iconButton{
+    color: #2A9D8F;
+    font-size: 20px;
+}
+
+.iconButton:hover{
+    color: #30b5a6;
+}
+
+
+
+
+
+/* font-family: 'Lato', sans-serif;
+font-family: 'Lexend', sans-serif;
+font-family: 'Metamorphous', cursive; */

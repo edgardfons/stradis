@@ -2,41 +2,91 @@
 <html>
 <head>
     {% block head %}
+
         {% block metas %}
             <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
         {% endblock metas %}
 
-        <title>{% block title %}Stradis{% endblock %}</title>
+        <title>Stradis - {% block title %}{% endblock %}</title>
+
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
         {% block styles %}
-            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css' ) }}">
+            <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+            <link rel="preconnect" href="https://fonts.gstatic.com">
+            <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Lexend:wght@300;400;500;700&family=Metamorphous&display=swap" rel="stylesheet">
+            <!-- <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/lato" type="text/css"/>  -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css" integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous">
+            <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
         {% endblock styles %}
+
     {% endblock head %}
 </head>
-<body>
-<nav>
-    {% block nav %}
-        <ul>
-            <li><a href="{{ url_for('professores') }}">Professores</a></li>
-            <li><a href="{{ url_for('turmas') }}">Turmas</a></li>
-        </ul>
-    {% endblock %}
-</nav>
 
-<main>
-    {% for message in get_flashed_messages() %}
-        <div class="alert">
-            {{ message }}
+<body>
+
+    <div class="content">
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+            
+                <a class="navbar-brand" id="navLogo" href="{{ url_for('index') }}">Stradis</a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if home_tab }}" aria-current="page" href="{{ url_for('index') }}">Programar Horários</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professores') }}">Professores</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if disc_tab }}" href="{{ url_for('disciplinas') }}">Disciplinas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if curso_tab }}" href="{{ url_for('cursos') }}">Cursos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if turma_tab }}" href="{{ url_for('turmas') }}">Turmas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professores') }}">Horários</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professores') }}">Salas</a>
+                        </li>
+            
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid stradisGuideContainer">
+            {% for message in get_flashed_messages() %}
+                <div class="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% block content %}{% endblock %}
         </div>
-    {% endfor %}
-    {% block content %}{% endblock %}
-</main>
-<footer>
-    {% block footer %}
-        <small> &copy; 2021 <span>Edgard Fonseca</span>
-        </small>
-    {% endblock %}
-</footer>
-{% block scripts %}{% endblock %}
+        
+    </div>
+    
+    <footer id="footer">
+        {% block footer %}
+            <small> &copy; 2021 <span>Projeto desenvolvido por Edgard Oliveira. Interfaces criadas por Igor Rodrigues.</span>
+            </small>
+        {% endblock %}
+    </footer>
+    
+    {% block scripts %}{% endblock %}
+
 </body>
+
 </html>
