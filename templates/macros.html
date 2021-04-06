@@ -1,0 +1,15 @@
+{% macro form_field(field) %}
+    <div class="mb-3">
+        {{ field.label(class_="form-label") }}
+        {% if field.flags.required %}
+            {{ field(class_='form-control', required='required', **kwargs) }}
+        {% else %}
+            {{ field(class_='form-control', **kwargs) }}
+        {% endif %}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <small class="error">{{ error }}</small>
+            {% endfor %}
+        {% endif %}
+    </div> 
+{% endmacro %}

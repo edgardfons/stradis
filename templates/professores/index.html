@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import form_field %}
+
+{% block title %}Professores{% endblock %}
 
 {% block content %}
 
@@ -13,38 +16,39 @@ relevante sobre o cadastro e as pesquisas de professores
         <hr class="dropdown-divider">
 
         <form class="d-flex">
-        <div class="mb-3 col-md-11">
-            <label for="name" class="form-label">Filtro</label>
-            <input type="email" class="form-control" id="name">
-        </div>
+            <div class="mb-3 col-md-11">
+                <label for="name" class="form-label">Filtro</label>
+                <input type="email" class="form-control" id="name">
+            </div>
 
-        <div class="align-self-center mt-3 col-md-1">
-            <label>&nbsp;</label>
-            <button type="submit" class="btn btn-stradis"><i class="fa fa-search"></i></button>
-        </div>
+            <div class="align-self-center mt-3 col-md-1">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-stradis"><i class="fa fa-search"></i></button>
+            </div>
         </form>
 
         <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-            <th>#</th>
-            <th>Nome</th>
-            <th class="col-md-1">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>
-                <span class="d-flex justify-content-between">
-                <a class="iconButton" href="#"><i class="fa fa-pencil-square-o"></i></a>
-                <a class="iconButton" href="#"><i class="fa fa-trash"></i></a>
-                </span>
-            </td>
-            </tr>
-
-        </tbody>
+            <thead>
+                <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th class="col-md-1">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prof in professores %}
+                    <tr>
+                        <td>{{ prof.id }}</td>
+                        <td>{{ prof.nome }}</td>
+                        <td>
+                            <span class="d-flex justify-content-between">
+                                <a class="iconButton" href="#"><i class="fa fa-pencil-square-o"></i></a>
+                                <a class="iconButton" href="#"><i class="fa fa-trash"></i></a>
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
 
     </div>
@@ -52,15 +56,15 @@ relevante sobre o cadastro e as pesquisas de professores
         <h3 class="text-center">Cadastrar</h3>
         <hr class="dropdown-divider">
 
-        <form>
-        <div class="mb-3">
-            <label for="name" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="name" name="name" maxlength="250">
-        </div>
+        <form method="POST">
+            
+            {{ save_form.csrf_token }}
+            {{ form_field(save_form.nome) }}            
 
-        <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-stradis col-md-4">Cadastrar</button>
-        </div>
+            <div class="d-flex justify-content-center">
+                {{ save_form.submit(class_="btn btn-stradis col-md-4") }}
+                <!-- <button type="submit" class="btn btn-stradis col-md-4">Cadastrar</button> -->
+            </div>
         </form>
 
     </div>
