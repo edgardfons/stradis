@@ -1,12 +1,17 @@
 import os
 import uuid
+import click
 
-from flask import Flask, render_template, flash, redirect, url_for, request, send_from_directory, session
-from forms import LoginForm
+from flask import Flask, render_template, flash, redirect, url_for, request
+from forms import *
+from models import *
 
 app = Flask(__name__)
 
 app.secret_key = os.getenv('SECRET_KEY', 'secret string')
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:5432/stradis"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+db.init_app(app)
 
 @app.route('/')
 def index():
@@ -14,9 +19,18 @@ def index():
 
 @app.route('/professores', methods=['GET', 'POST'])
 def professores():
-    if request.method == 'POST':
-        return redirect(url_for('index'))
-    return render_template('professores/index.html', prof_tab=True)
+    save_form = ProfessorSaveForm()
+
+    if request.method == 'POST' and save_form.validate():
+        professor = Professor(nome=save_form.nome.data)
+        db.session.add(professor)
+        db.session.commit()
+        flash('Professor(a) salvo com sucesso!', 'success')
+        return redirect(url_for('professores'))
+
+    professores = Professor.query.all()
+
+    return render_template('professores/index.html', prof_tab=True, professores=professores, save_form=save_form)
 
 @app.route('/turmas', methods=['GET', 'POST'])
 def turmas():
