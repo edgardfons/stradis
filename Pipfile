@@ -14,7 +14,11 @@ numpy = "*"
 Flask = "*"
 flask_ckeditor = "*"
 flask_wtf = "*"
+flask_sqlalchemy = "*"
 wtforms = "*"
+
+# Database
+psycopg2 = "*"
 
 [requires]
 python_version = "3.8.5"
