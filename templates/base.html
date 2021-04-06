@@ -43,23 +43,21 @@
                         <li class="nav-item">
                             <a class="nav-link {{ 'active' if home_tab }}" aria-current="page" href="{{ url_for('index') }}">Programar Horários</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professores') }}">Professores</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link {{ 'active' if disc_tab }}" href="{{ url_for('disciplinas') }}">Disciplinas</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link {{ 'active' if curso_tab }}" href="{{ url_for('cursos') }}">Cursos</a>
                         </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link {{ 'active' if turma_tab }}" href="{{ url_for('turmas') }}">Turmas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professores') }}">Horários</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professores') }}">Salas</a>
                         </li>
             
                     </ul>

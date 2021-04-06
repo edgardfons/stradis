@@ -34,24 +34,45 @@ def professores():
 
 @app.route('/turmas', methods=['GET', 'POST'])
 def turmas():
-    if request.method == 'POST':
-        return redirect(url_for('index'))
-    return render_template('turmas/index.html')
+    save_form = TurmaSaveForm()
 
-@app.route('/salas', methods=['GET', 'POST'])
-def salas():
-    if request.method == 'POST':
-        return redirect(url_for('index'))
-    return render_template('salas/index.html')
+    if request.method == 'POST' and save_form.validate():
+        turma = Turma(nome=save_form.nome.data)
+        db.session.add(turma)
+        db.session.commit()
+        flash('Turma salva com sucesso!', 'success')
+        return redirect(url_for('turmas'))
+
+    turmas = Turma.query.all()
+
+    return render_template('turmas/index.html', turma_tab=True, turmas=turmas, save_form=save_form)
 
 @app.route('/cursos', methods=['GET', 'POST'])
 def cursos():
-    if request.method == 'POST':
-        return redirect(url_for('index'))
-    return render_template('cursos/index.html')
+    save_form = CursoSaveForm()
+
+    if request.method == 'POST' and save_form.validate():
+        curso = Curso(nome=save_form.nome.data)
+        db.session.add(curso)
+        db.session.commit()
+        flash('Curso salva com sucesso!', 'success')
+        return redirect(url_for('cursos'))
+
+    cursos = Curso.query.all()
+
+    return render_template('cursos/index.html', curso_tab=True, cursos=cursos, save_form=save_form)
 
 @app.route('/disciplinas', methods=['GET', 'POST'])
 def disciplinas():
-    if request.method == 'POST':
-        return redirect(url_for('index'))
-    return render_template('disciplinas/index.html')
+    save_form = DisciplinaSaveForm()
+
+    if request.method == 'POST' and save_form.validate():
+        disciplina = Disciplina(nome=save_form.nome.data)
+        db.session.add(disciplina)
+        db.session.commit()
+        flash('Disciplina salva com sucesso!', 'success')
+        return redirect(url_for('disciplinas'))
+
+    disciplinas = Disciplina.query.all()
+
+    return render_template('disciplinas/index.html', disc_tab=True, disciplinas=disciplinas, save_form=save_form)
