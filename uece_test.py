@@ -69,6 +69,7 @@ db.session.add(Disciplina(nome='COMUNICAÇÃO E EXPRESSÃO', codigo='CT-07'))
 
 db.session.add(Disciplina(nome='PROGRAMAÇÃO ESTRUTURADA E ORIENTADA A OBJETO', codigo='CT-010'))
 db.session.add(Disciplina(nome='CIRCUITOS LÓGICOS DIGITAIS', codigo='CT-011'))
+db.session.add(Disciplina(nome='CÁLCULO DIFERENCIAL E INTEGRAL II', codigo='CT-04'))
 db.session.add(Disciplina(nome='LÓGICA PARA COMPUTAÇÃO', codigo='CT-012'))
 db.session.add(Disciplina(nome='ÁLGEBRA LINEAR PARA COMPUTAÇÃO', codigo='CT-013'))
 db.session.add(Disciplina(nome='FÍSICA PARA COMPUTAÇÃO I', codigo='CT-014'))
@@ -78,6 +79,7 @@ db.session.add(Disciplina(nome='CONCEITOS DE LINGUAGEM DE PROGRAMAÇÃO', codigo
 db.session.add(Disciplina(nome='ARQUITETURA DE COMPUTADORES', codigo='CT-019'))
 db.session.add(Disciplina(nome='CÁLCULO DIFERENCIAL E INTEGRAL III', codigo='CT-020'))
 db.session.add(Disciplina(nome='PROBABILIDADE E ESTATÍSTICA', codigo='CT-021'))
+db.session.add(Disciplina(nome='FÍSICA PARA COMPUTAÇÃO II', codigo='CT-014'))
 
 db.session.add(Disciplina(nome='ESTRUTURA DE DADOS II', codigo='CT-024'))
 db.session.add(Disciplina(nome='TEORIA DOS GRAFOS', codigo='CT-025'))
@@ -114,6 +116,8 @@ print('Disciplinas cadastrados!\n')
 db.session.add(Campus(nome='ITAPERI'))
 db.session.add(Campus(nome='BAIRRO DE FÁTIMA'))
 
+db.session.commit()
+
 print('Capus cadastrados!\n')
 
 
@@ -128,7 +132,7 @@ db.session.add(Turma(codigo='1522', aulas_num=2, disciplina_id=8, professor_id=1
 db.session.add(Turma(codigo='1523', aulas_num=2, disciplina_id=9, professor_id=6, etapa=2, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
 db.session.add(Turma(codigo='1524', aulas_num=2, disciplina_id=10, professor_id=22, etapa=2, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
 db.session.add(Turma(codigo='1525', aulas_num=2, disciplina_id=11, professor_id=21, etapa=2, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
-db.session.add(Turma(codigo='1526', aulas_num=2, disciplina_id=12, professor_id=10, etapa=2, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
+db.session.add(Turma(codigo='1526', aulas_num=2, disciplina_id=12, professor_id=10, etapa=2, campus_id=1, geminada=True, periodo_letivo=PeriodoLetivo.P_20202))
 db.session.add(Turma(codigo='1527', aulas_num=2, disciplina_id=13, professor_id=16, etapa=3, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
 db.session.add(Turma(codigo='1528', aulas_num=2, disciplina_id=14, professor_id=9, etapa=3, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
 db.session.add(Turma(codigo='1529', aulas_num=2, disciplina_id=15, professor_id=20, etapa=3, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
@@ -155,13 +159,19 @@ db.session.add(Turma(codigo='1549', aulas_num=2, disciplina_id=35, professor_id=
 db.session.add(Turma(codigo='1550', aulas_num=2, disciplina_id=36, professor_id=1, etapa=6, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
 db.session.add(Turma(codigo='1551', aulas_num=2, disciplina_id=37, professor_id=16, etapa=7, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
 db.session.add(Turma(codigo='1552', aulas_num=2, disciplina_id=38, professor_id=14, etapa=7, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
-db.session.add(Turma(codigo='1553', aulas_num=2, disciplina_id=39, professor_id=3, etapa=8, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
+db.session.add(Turma(codigo='1553', aulas_num=2, disciplina_id=39, professor_id=3, etapa=8, campus_id=2, periodo_letivo=PeriodoLetivo.P_20202))
 
+db.session.add(TurmaIndisponibilidade(turma_id=1, horario_id=3, dia=Dia.QUI))
+
+db.session.add(TurmaPreAgendada(turma_id=8, horario_id=5, dia=Dia.QUA))
+
+
+db.session.commit()
 
 print('Turmas cadastrados!\n')
 
 
-print('Conjuntos transformados:\n')
+# print('Conjuntos transformados:\n')
 
 conj = Conjuntos(
     days=dias_padrao(), 
@@ -178,8 +188,14 @@ print( 'Etapas => ' + str(conj.etapas()) )
 print( 'Eventos => ' + str(conj.turmas()) )
 print( 'Eventos Simples => ' + str(conj.turmas_simples()) )
 print( 'Eventos Geminadas => ' + str(conj.turmas_geminadas()) )
-# print( 'Evento x Professor => ' + str(conj.turmas_professor()) )
-# print( 'Evento x Etapa => ' + str(conj.turmas_etapa()) )
+print( 'Evento x Professor => ' + str(conj.turmas_professor()) )
+print( 'Evento x Etapa => ' + str(conj.turmas_etapa()) )
+print( 'Eventos disponibilidade => ' + str(conj.turmas_disponibilidade()))
+print( 'Eventos pre-agendados => ' + str(conj.turmas_preagendadas()))
+print( 'Eventos conflito => ' + str(conj.turmas_conflitos()))
+print( 'Eventos campus diferentes => ' + str(conj.turmas_campus()) )
+
+# solve(conj)
 
 # Closing context
 ctx.pop()
