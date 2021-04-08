@@ -264,11 +264,11 @@ for (e, d, h) in scheduled_indexes:
 
 # (5)
 for (es, d) in events_simples_days_indexes:
-  prob += lpSum( [ (scheduled[e][d][h] + scheduled[e][ days_of_week[ days_of_week.index(d) + 1 ] ][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s" % (es, d, days_of_week[ days_of_week.index(d) + 1 ])
+  prob += lpSum( [ (scheduled[es][d][h] + scheduled[es][ days_of_week[ days_of_week.index(d) + 1 ] ][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s" % (es, d, days_of_week[ days_of_week.index(d) + 1 ])
 
 # (6)
 for (es, d1, d2) in events_simples_days_indexes_2:
-  prob += lpSum([ (scheduled[e][d1][h] + scheduled[e][d2][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s_or_after" % (es, d1, d2)
+  prob += lpSum([ (scheduled[es][d1][h] + scheduled[es][d2][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s_or_after" % (es, d1, d2)
 
 # (7)
 for (es, h) in events_simples_hours:
@@ -310,6 +310,10 @@ for (e1, e2, d, h) in conflict_indexes:
 # (16)
 for (t, d, h) in term_days_hours:
   prob += lpSum([ scheduled[e][d][h] for e in term_events[t] ]) <= 2 + exceding_term_day_hour[t][d][h], "Two_more_Events_are_scheduled_in_term_%s_at_%s_%s" % (t, d, h) # Arbitrary
+
+# (17)
+for (t, d) in teacher_day:
+  prob += lpSum([scheduled[et][d][h] for h in hours_days for et in teacher_events[t]]) <= 2, "Two_max_Events_are_scheduled_for_teacher_%s_at_%s" % (t, d) # Arbitrary
 
 print("Nº of variables: " + str(len(prob.variables())))
 

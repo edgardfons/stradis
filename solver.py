@@ -9,6 +9,7 @@ Testes do solver
 import numpy as np
 from pulp import *
 from models import *
+import re
 
 
 EVENT_CONFLCT_WEIGHT = 1000
@@ -143,17 +144,6 @@ class Conjuntos:
     def turmas_num(self):
         return [event.aulas_num for event in self.events]
 
-class Parametros:
-
-    def __init__(self, dias, horarios, professores, etapas, eventos):
-        self.dias = dias
-        self.horarios = horarios
-        self.professores = professores
-        self.etapas = etapas
-        self.eventos = eventos
-
-    def dias(self):
-        return self.dias
 
 def dias_padrao():
     '''
@@ -178,14 +168,10 @@ def solve(conj):
     events = conj.turmas()
     events_simples = conj.turmas_simples()
     events_geminados = conj.turmas_geminadas()
-
     events_number = conj.turmas_num()
-
     events_availability = conj.turmas_disponibilidade()
     events_pre_schedule = conj.turmas_preagendadas()
-
     events_conflict = conj.turmas_conflitos()
-
     events_campus = conj.turmas_campus()
 
     # Adding model elemets
@@ -200,7 +186,7 @@ def solve(conj):
 
     prob = LpProblem("UniversityCourseTimetabling", LpMinimize)
 
-    # Varibles
+    # Váriaveis
     conflict = LpVariable.dicts("Conflicted", (events, events, days_of_week, hours_days), 0, 1, LpInteger)
     scheduled = LpVariable.dicts("Scheduled", (events, days_of_week, hours_days), 0, 1, LpInteger)
     pre_hour_scheduled = LpVariable.dicts("PreHourScheduled", (events, hours_days), 0, 1, LpInteger)
@@ -209,11 +195,12 @@ def solve(conj):
     idle_term_day_hour = LpVariable.dicts("IdleTermDayHour", (terms, days_of_week, hours_days), 0, 1, LpInteger)
     exceding_term_day_hour = LpVariable.dicts("ExcedingEventsTermDayHour", (terms, days_of_week, hours_days), 0, None, LpInteger)
 
-    # Aux indexes
+    # Indexes auxiliares
     conflict_indexes = [ (e1, e2, d, h) for e1 in events for e2 in events if events.index(e1) > events.index(e2) and events_conflict[e1][e2] == 1 for d in days_of_week for h in hours_days ]
     scheduled_indexes = [ (e, d, h) for e in events for d in days_of_week for h in hours_days ]
     hour_day_indexes = [ (d, h) for d in days_of_week for h in hours_days ]
     teacher_hour_day = [ (t, d, h) for t in teachers for d in days_of_week for h in hours_days ]
+    teacher_day = [ (t, d) for t in teachers for d in days_of_week ]
     events_simples_days_indexes = [ (es, d) for es in events_simples for d in days_of_week if days_of_week.index(d) < len(days_of_week) - 1]
     events_simples_days_indexes_2 = [ (es, d1, d2) for es in events_simples if events_number[es] == 2 for d1 in days_of_week for d2 in days_of_week if days_of_week.index(d2) >= days_of_week.index(d1) + 3]
     events_simples_hours = [ (es, h) for es in events_simples for h in hours_days ]
@@ -243,11 +230,11 @@ def solve(conj):
 
     # (5)
     for (es, d) in events_simples_days_indexes:
-        prob += lpSum( [ (scheduled[e][d][h] + scheduled[e][ days_of_week[ days_of_week.index(d) + 1 ] ][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s" % (es, d, days_of_week[ days_of_week.index(d) + 1 ])
+        prob += lpSum( [ (scheduled[es][d][h] + scheduled[es][ days_of_week[ days_of_week.index(d) + 1 ] ][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s" % (es, d, days_of_week[ days_of_week.index(d) + 1 ])
 
     # (6)
     for (es, d1, d2) in events_simples_days_indexes_2:
-        prob += lpSum([ (scheduled[e][d1][h] + scheduled[e][d2][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s_or_after" % (es, d1, d2)
+        prob += lpSum([ (scheduled[es][d1][h] + scheduled[es][d2][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s_or_after" % (es, d1, d2)
 
     # (7)
     for (es, h) in events_simples_hours:
@@ -290,64 +277,47 @@ def solve(conj):
     for (t, d, h) in term_days_hours:
         prob += lpSum([ scheduled[e][d][h] for e in term_events[t] ]) <= 2 + exceding_term_day_hour[t][d][h], "Two_more_Events_are_scheduled_in_term_%s_at_%s_%s" % (t, d, h) # Arbitrary
 
-    print("Nº of variables: " + str(len(prob.variables())))
+    # (17)
+    for (t, d) in teacher_day:
+        prob += lpSum([scheduled[et][d][h] for h in hours_days for et in teacher_events[t]]) <= 2, "Two_max_Events_are_scheduled_for_teacher_%s_at_%s" % (t, d) # Arbitrary
 
     # The problem data is written to an .lp file
     prob.writeLP("UniversityCouseTimetabling.lp")
 
+    # Obter valores inteiros
     prob.roundSolution()
 
     # The problem is solved using PuLP's choice of Solver
-    prob.solve(GLPK())
-    # prob.solve()
+    prob.solve(GLPK(msg = 0))
 
     # The status of the solution is printed to the screen
-    print("Status:", LpStatus[prob.status])
+    # print("Status:", LpStatus[prob.status])
 
+    if LpStatus[prob.status] != 'Optimal':
+        print('Solução otima não encontrada.')
 
     # Each of the variables is printed with it's resolved optimum value
-    for v in prob.variables():
-        if v.name.find("Scheduled") == 0 and v.varValue != 0:
-            print(v.name, "=", v.varValue)
+    # for v in prob.variables():
+    #     if v.name.find("Scheduled") == 0 and v.varValue != 0:
+    #         print(v)
 
-    # The optimised objective function value is printed to the screen    
-    print( "Total undesirablness value = ", value(prob.objective) )
-
+    return timetable( list(filter( lambda vari: vari.name.find("Scheduled") == 0 and vari.varValue != 0, prob.variables() )), conj )
 
 
+def timetable(variables, conj):
 
+    scheduled = [[ [0] * len(conj.horarios()) for i in range(len(conj.dias())) ] for j in range(len(conj.turmas()))]
 
+    # Scheduled_9_SEG_3
+    for v in variables:
+        regex = re.compile(r'Scheduled_(\d+)_(DOM|SEG|TER|QUA|QUI|SEX|SAB)_(\d+)')
+        ids = regex.match(v.name)
+        
+        event_index = conj.turmas().index(ids.group(1))
+        day_index = conj.dias().index(ids.group(2))
+        hour_index = conj.horarios().index(ids.group(3))
 
+        scheduled[event_index][day_index][hour_index] = 1
+        
+    return scheduled
 
-
-
-# Criar entradas e parametros
-# Utilizar ids como identicadores a serem usados no solver
-# exclu = Dia.DOM | Dia.SAB
-# days = list( map(lambda dia: str(dia.value), list(filter(lambda dia: dia not in exclu, list(Dia)))) )
-
-# hours = [ 
-#     Horario(nome='AB_M'),
-#     Horario(nome='CD_M', utlimo_dia=True),
-#     Horario(nome='AB_T'), 
-#     Horario(nome='CD_T', utlimo_dia=True),
-#     Horario(nome='AB_N'),
-#     Horario(nome='CD_N', utlimo_dia=True)
-# ]
-# final_hours = list(filter(lambda horario: horario.utlimo_dia, hours))
-
-# hours = list( map(lambda hora: hora.nome, hours) )
-# final_hours = list( map(lambda hora: hora.nome, final_hours) )
-
-# 26 professores
-# professores = [ Professor(nome="Prof_%s"%i) for i in range(NUM_PROFESSORES) ]
-# professores = [ str(i) for i in range(NUM_PROFESSORES) ]
-
-# 9 periodos letivos
-# etapas = range(NUM_ETAPAS)
-# etapas = [ str(i) for i in range(NUM_ETAPAS) ]
-
-# 31 turmas (27 simples e 4 geminadas)
-# events = [ str(i) for i in range(NUM_TURMAS) ]
-# events_geminados = "4 5 9 14".split()
-# events_simples = list( filter(lambda i: i not in events_geminados, events) )

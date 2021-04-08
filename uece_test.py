@@ -1,5 +1,6 @@
 from app import *
 from solver import *
+from time import perf_counter
 
 # Constants
 
@@ -31,7 +32,7 @@ db.session.add(Horario(nome='CD_N', inicio='20:20', fim='22:40', utlimo_dia=True
 
 db.session.commit()
 
-print('Horários cadastrados!\n')
+print('Horários cadastrados!')
 
 db.session.add(Professor(nome='ANA LUIZA BESSA DE PAULA BARROS'))
 db.session.add(Professor(nome='ANDRE LUIZ MOURA DOS SANTOS'))
@@ -58,7 +59,7 @@ db.session.add(Professor(nome='THELMO PONTES DE ARAÚJO'))
 
 db.session.commit()
 
-print('Professores cadastrados!\n')
+print('Professores cadastrados!')
 
 db.session.add(Disciplina(nome='INTRODUÇÃO A COMPUTAÇÃO', codigo='CT-02'))
 db.session.add(Disciplina(nome='MATEMÁTICA DISCRETA', codigo='CT-03'))
@@ -111,14 +112,14 @@ db.session.add(Disciplina(nome='ADMINISTRAÇÃO PARA COMPUTAÇÃO', codigo='CT-0
 
 db.session.commit()
 
-print('Disciplinas cadastrados!\n')
+print('Disciplinas cadastrados!')
 
 db.session.add(Campus(nome='ITAPERI'))
 db.session.add(Campus(nome='BAIRRO DE FÁTIMA'))
 
 db.session.commit()
 
-print('Capus cadastrados!\n')
+print('Capus cadastrados!')
 
 
 db.session.add(Turma(codigo='1515', aulas_num=3, disciplina_id=1, professor_id=1, etapa=1, campus_id=1, periodo_letivo=PeriodoLetivo.P_20202))
@@ -168,7 +169,7 @@ db.session.add(TurmaPreAgendada(turma_id=8, horario_id=5, dia=Dia.QUA))
 
 db.session.commit()
 
-print('Turmas cadastrados!\n')
+print('Turmas cadastrados!')
 
 
 # print('Conjuntos transformados:\n')
@@ -195,7 +196,13 @@ conj = Conjuntos(
 # print( 'Eventos conflito => ' + str(conj.turmas_conflitos()))
 # print( 'Eventos campus diferentes => ' + str(conj.turmas_campus()) )
 
+t1_start = perf_counter() 
+
 solve(conj)
+
+t1_stop = perf_counter()
+
+print("Duração do processamento: %s segundos" % "{:3.2f}".format(t1_stop-t1_start) ) 
 
 # Closing context
 ctx.pop()
