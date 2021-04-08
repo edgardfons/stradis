@@ -53,49 +53,42 @@ class Conjuntos:
 
     def turmas_professor(self):
         
-        turm_prof = {}
+        turm_prof = { prof:[] for prof in self.professores() }
 
         for event in self.events:
-
-            if str(event.professor_id) in turm_prof.keys():
-                turm_prof[str(event.professor_id)].append(str(event.id))
-            else:
-                turm_prof[str(event.professor_id)] = [ str(event.id) ]
+            turm_prof[str(event.professor_id)].append(str(event.id))
 
         return turm_prof
 
     def turmas_etapa(self):
         
-        turm_etapa = {}
+        turm_etapa = { etapa:[] for etapa in self.etapas() }
 
         for event in self.events:
-
-            if str(event.etapa) in turm_etapa.keys():
-                turm_etapa[str(event.etapa)].append(str(event.id))
-            else:
-                turm_etapa[str(event.etapa)] = [ str(event.id) ]
-
+            turm_etapa[str(event.etapa)].append(str(event.id))
+           
         return turm_etapa
 
     def turmas_disponibilidade(self):
         
-        disp = [ [ [None] * len(self.horarios()) ] * len(self.dias()) ] * len(self.events)
-
+        disp = [[ [1] * len(self.horarios()) for i in range(len(self.dias())) ] for j in range(len(self.events))]
+        
         for event_index, event in enumerate(self.events):
 
             indis = list( map(lambda ind: (ind.dia.name, str(ind.horario_id)), event.indisponibilidade ) )
-
+            
             for day_index, day in enumerate(self.dias()):
 
                 for hour_index, hour in enumerate(self.horarios()):
-
-                    disp[event_index][day_index][hour_index] = 0 if (day, hour) in indis else 1            
-
+                    
+                    if (day, hour) in indis:
+                        disp[event_index][day_index][hour_index] = 0
+              
         return disp
 
     def turmas_preagendadas(self):
         
-        agend = [ [ [None] * len(self.horarios()) ] * len(self.dias()) ] * len(self.events)
+        agend = [[ [0] * len(self.horarios()) for i in range(len(self.dias())) ] for j in range(len(self.events))]
 
         for event_index, event in enumerate(self.events):
 
@@ -105,16 +98,15 @@ class Conjuntos:
 
                 for hour_index, hour in enumerate(self.horarios()):
 
-                    agend[event_index][day_index][hour_index] = 0 if (day, hour) in pre_agen else 1
+                    if (day, hour) in pre_agen:
+                        agend[event_index][day_index][hour_index] = 1
 
         return agend
 
-
-    # Matriz de conflito (assumindo lista de eventos já ordenada)
     def turmas_conflitos(self):
         
         len_events = len(self.events)
-        conflict = [ [None] * len_events ] * len_events        
+        conflict = [ [0] * len_events for i in range(len_events)]        
         
         for j in range(len_events):
 
@@ -124,7 +116,8 @@ class Conjuntos:
                 
                 ev1 = self.events[i]
 
-                conflict[i][j] = 1 if ev1.etapa == ev2.etapa else 0
+                if ev1.etapa == ev2.etapa:
+                    conflict[i][j] = 1
                 
 
         return conflict
@@ -132,7 +125,7 @@ class Conjuntos:
     def turmas_campus(self):
 
         len_events = len(self.events)
-        campus = [ [None] * len_events ] * len_events       
+        campus = [ [0] * len_events for i in range(len_events)]
 
         for j in range(len_events):
 
@@ -142,7 +135,8 @@ class Conjuntos:
                 
                 ev1 = self.events[i]
 
-                campus[i][j] = 0 if ev1.campus_id == ev2.campus_id else 1         
+                if ev1.campus_id != ev2.campus_id:
+                    campus[i][j] = 1
 
         return campus
 
