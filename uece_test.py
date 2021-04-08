@@ -1,6 +1,5 @@
 from app import *
 from solver import *
-from time import perf_counter
 
 # Constants
 
@@ -23,12 +22,12 @@ print('Banco de dados recriado')
 
 print('Adicionando horas, professores, disciplinas e turmas')
 
-db.session.add(Horario(nome='AB_M', inicio='07:30', fim='09:10'))
-db.session.add(Horario(nome='CD_M', inicio='09:20', fim='11:00', utlimo_dia=True))
-db.session.add(Horario(nome='AB_T', inicio='13:20', fim='15:00'))
-db.session.add(Horario(nome='CD_T', inicio='15:10', fim='16:50', utlimo_dia=True))
-db.session.add(Horario(nome='AB_N', inicio='18:30', fim='20:10'))
-db.session.add(Horario(nome='CD_N', inicio='20:20', fim='22:40', utlimo_dia=True))
+db.session.add(Horario(nome='AB_M', inicio='07:30', fim='09:10', ordem=1))
+db.session.add(Horario(nome='CD_M', inicio='09:20', fim='11:00', ordem=2, utlimo_dia=True))
+db.session.add(Horario(nome='AB_T', inicio='13:20', fim='15:00', ordem=3))
+db.session.add(Horario(nome='CD_T', inicio='15:10', fim='16:50', ordem=4, utlimo_dia=True))
+db.session.add(Horario(nome='AB_N', inicio='18:30', fim='20:10', ordem=5))
+db.session.add(Horario(nome='CD_N', inicio='20:20', fim='22:40', ordem=6, utlimo_dia=True))
 
 db.session.commit()
 
@@ -171,9 +170,6 @@ db.session.commit()
 
 print('Turmas cadastrados!')
 
-
-# print('Conjuntos transformados:\n')
-
 conj = Conjuntos(
     days=dias_padrao(), 
     hours=Horario.query.all(),
@@ -182,27 +178,16 @@ conj = Conjuntos(
     events=Turma.query.all()
 )
 
-# print( 'Dias => ' + str(conj.dias()) )
-# print( 'Horarios => ' + str(conj.horarios()) )
-# print( 'Professores => ' + str(conj.professores()) )
-# print( 'Etapas => ' + str(conj.etapas()) )
-# print( 'Eventos => ' + str(conj.turmas()) )
-# print( 'Eventos Simples => ' + str(conj.turmas_simples()) )
-# print( 'Eventos Geminadas => ' + str(conj.turmas_geminadas()) )
-# print( 'Evento x Professor => ' + str(conj.turmas_professor()) )
-# print( 'Evento x Etapa => ' + str(conj.turmas_etapa()) )
-# print( 'Eventos disponibilidade => ' + str(conj.turmas_disponibilidade()))
-# print( 'Eventos pre-agendados => ' + str(conj.turmas_preagendadas()))
-# print( 'Eventos conflito => ' + str(conj.turmas_conflitos()))
-# print( 'Eventos campus diferentes => ' + str(conj.turmas_campus()) )
 
-t1_start = perf_counter() 
+grade = solve(conj)
 
-solve(conj)
+grade.nome = 'Grade de teste da UECE'
 
-t1_stop = perf_counter()
+db.session.add(grade)
 
-print("Duração do processamento: %s segundos" % "{:3.2f}".format(t1_stop-t1_start) ) 
+db.session.commit()
+
+print('Grade de teste UECE cadastrada!')
 
 # Closing context
 ctx.pop()

@@ -32,3 +32,9 @@ class CampusSaveForm(FlaskForm):
 class TurmaSaveForm(FlaskForm):
     nome = StringField('Nome', validators=[DataRequired(), Length(1, 250)])
     submit = SubmitField('Cadastrar')
+
+class HorarioSaveForm(FlaskForm):
+    nome = StringField('Nome', validators=[DataRequired(), Length(1, 250)])
+    nome = StringField('Inicio', validators=[Length(0, 5)])
+    nome = StringField('Fim', validators=[Length(0, 5)])
+    submit = SubmitField('Cadastrar')

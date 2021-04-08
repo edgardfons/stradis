@@ -9,7 +9,7 @@ from models import *
 app = Flask(__name__)
 
 app.secret_key = os.getenv('SECRET_KEY', 'secret string')
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:5432/stradis"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:5432/stradis_test"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db.init_app(app)
 
@@ -17,6 +17,21 @@ db.init_app(app)
 def index():
     return render_template('index.html')
 
+@app.route('/grades')
+def grades():
+
+    grades = Grade.query.all()
+
+    return render_template('grades/index.html', grades=grades, grade_tab=True)
+
+@app.route('/grades/<int:id>')
+def grades_view(id):
+
+    grade = Grade.query.get_or_404(id)
+
+    return render_template('grades/view.html', grade=grade, grade_tab=True)
+
+    
 @app.route('/professores', methods=['GET', 'POST'])
 def professores():
     save_form = ProfessorSaveForm()
@@ -76,3 +91,18 @@ def disciplinas():
     disciplinas = Disciplina.query.all()
 
     return render_template('disciplinas/index.html', disc_tab=True, disciplinas=disciplinas, save_form=save_form)
+
+@app.route('/horarios', methods=['GET', 'POST'])
+def horarios():
+    save_form = HorarioSaveForm()
+
+    if request.method == 'POST' and save_form.validate():
+        horario = Horario(nome=save_form.nome.data,inicio=save_form.inicio.data,fim=save_form.fim.data)
+        db.session.add(horario)
+        db.session.commit()
+        flash('Disciplina salva com sucesso!', 'success')
+        return redirect(url_for('disciplinas'))
+
+    horarios = Horario.query.all()
+
+    return render_template('horarios/index.html', hora_tab=True, horarios=horarios, save_form=save_form)

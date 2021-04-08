@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from enum import Enum, IntFlag, auto
+from datetime import datetime
 
 NAME_LIMIT = 250
 
@@ -25,6 +26,7 @@ class Professor(db.Model):
     __tablename__="professor"
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(NAME_LIMIT), nullable=False)
+    turmas = db.relationship('Turma', backref='professor', lazy=True)
 
 class Curso(db.Model):
     __tablename__="curso"
@@ -37,6 +39,7 @@ class Disciplina(db.Model):
     codigo = db.Column(db.String, nullable=False)
     nome = db.Column(db.String(NAME_LIMIT), nullable=False)
     grade_curricular = db.Column(db.Enum(GradeCurricular))
+    turmas = db.relationship('Turma', backref='disciplina', lazy=True)
 
 class Campus(db.Model):
     __tablename__="campus"
@@ -51,6 +54,10 @@ class Horario(db.Model):
     inicio = db.Column(db.String(5))
     fim = db.Column(db.String(5))
     utlimo_dia = db.Column(db.Boolean, default=False, nullable=False)
+    ordem = db.Column(db.Integer, default=1, nullable=False)
+
+    def desc(self):
+        return self.nome + ' ' + self.inicio + ' ' + self.fim
 
 class Turma(db.Model):
     __tablename__="turma"
@@ -80,3 +87,24 @@ class TurmaPreAgendada(db.Model):
     horario_id = db.Column(db.Integer, db.ForeignKey('horario.id'), nullable=False)
     dia = db.Column(db.Enum(Dia), nullable=False)
 
+class Grade(db.Model):
+    __tablename__="grade"
+    id = db.Column(db.Integer, primary_key=True)
+    criada = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    nome = db.Column(db.String(NAME_LIMIT))
+    professores = db.Column(db.Integer, nullable=False)
+    turmas = db.Column(db.Integer, nullable=False)
+    entradas = db.relationship('GradeEntrada', backref='grade', lazy=True, cascade="all, delete-orphan")
+
+class GradeEntrada(db.Model):
+    __tablename__="grade_entrada"
+    id = db.Column(db.Integer, primary_key=True)
+    dia = db.Column(db.Enum(Dia), nullable=False)
+    horario = db.Column(db.String(260), nullable=False)
+    disciplina = db.Column(db.String(255), nullable=False)
+    professor = db.Column(db.String(255), nullable=False)
+    ordem = db.Column(db.Integer, nullable=False)
+    grade_id = db.Column(db.Integer, db.ForeignKey('grade.id'), nullable=False)
+
+    def __str__(self):
+        return "Disciplina: %s | Professor: %s | Dia: %s | Hora: %s" % (self.disciplina, self.professor, self.dia.name, self.horario)

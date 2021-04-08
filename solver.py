@@ -10,6 +10,7 @@ import numpy as np
 from pulp import *
 from models import *
 import re
+from time import perf_counter
 
 
 EVENT_CONFLCT_WEIGHT = 1000
@@ -287,28 +288,27 @@ def solve(conj):
     # Obter valores inteiros
     prob.roundSolution()
 
+    t1_start = perf_counter() 
     # The problem is solved using PuLP's choice of Solver
     prob.solve(GLPK(msg = 0))
 
-    # The status of the solution is printed to the screen
-    # print("Status:", LpStatus[prob.status])
+    t1_stop = perf_counter()
+
+    print("Duração do processamento: %s segundos" % "{:3.2f}".format(t1_stop-t1_start) ) 
+
 
     if LpStatus[prob.status] != 'Optimal':
         print('Solução otima não encontrada.')
 
-    # Each of the variables is printed with it's resolved optimum value
-    # for v in prob.variables():
-    #     if v.name.find("Scheduled") == 0 and v.varValue != 0:
-    #         print(v)
 
     return timetable( list(filter( lambda vari: vari.name.find("Scheduled") == 0 and vari.varValue != 0, prob.variables() )), conj )
 
 
 def timetable(variables, conj):
+ 
+    grade_entradas = []
+    # scheduled = [[ [0] * len(conj.horarios()) for i in range(len(conj.dias())) ] for j in range(len(conj.turmas()))]
 
-    scheduled = [[ [0] * len(conj.horarios()) for i in range(len(conj.dias())) ] for j in range(len(conj.turmas()))]
-
-    # Scheduled_9_SEG_3
     for v in variables:
         regex = re.compile(r'Scheduled_(\d+)_(DOM|SEG|TER|QUA|QUI|SEX|SAB)_(\d+)')
         ids = regex.match(v.name)
@@ -317,7 +317,16 @@ def timetable(variables, conj):
         day_index = conj.dias().index(ids.group(2))
         hour_index = conj.horarios().index(ids.group(3))
 
-        scheduled[event_index][day_index][hour_index] = 1
-        
-    return scheduled
+        # scheduled[event_index][day_index][hour_index] = 1
+        grade_entradas.append( 
+            GradeEntrada(
+                dia=conj.days[day_index],
+                horario=conj.hours[hour_index].desc(),
+                disciplina=conj.events[event_index].disciplina.nome,
+                professor=conj.events[event_index].professor.nome,
+                ordem=conj.hours[hour_index].ordem
+            )
+         )
+
+    return Grade(professores=len(conj.professores()), turmas=len(conj.turmas()), entradas=grade_entradas)
 
