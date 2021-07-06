@@ -10,7 +10,7 @@ Utilizando um modelo de programação linear, esta aplicação se utiliza de inf
 
 ### Resolvedor do modelo PL
 
-O Stradis utiliza o GLPK.
+O Stradis utiliza a biblioteca Pulp.
 
 ### Ferramenta Web
 

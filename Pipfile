@@ -9,16 +9,16 @@ faker = "*"
 [packages]
 pulp = "*"
 numpy = "*"
-
-# Flask group of dependencies
 Flask = "*"
 flask_ckeditor = "*"
 flask_wtf = "*"
 flask_sqlalchemy = "*"
 wtforms = "*"
-
-# Database
 psycopg2 = "*"
+python-dotenv = "*"
+gunicorn = "*"
+flask-wtf = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.8.5"
