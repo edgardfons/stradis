@@ -1,6 +1,6 @@
 from flask import render_template, request, Blueprint, flash, redirect, url_for
 
-from app.models.professor import Professor, ProfessorCreateForm, ProfessorIndexForm
+from app.models.professor import Professor, ProfessorCreateForm, ProfessorIndexForm, Status
 from app.extensions import db
 from app.utils import sql_date_format, sql_ilike_format, parse_date
 

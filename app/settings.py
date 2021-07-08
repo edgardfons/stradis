@@ -19,7 +19,7 @@ basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 class BaseConfig:
     SECRET_KEY = os.getenv('SECRET_KEY', 'I am the bone of my sword!')
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', "postgresql://postgres:postgres@localhost:5432/emcobranca")
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', "postgresql://postgres:postgres@localhost:5432/stradis")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     BABEL_DEFAULT_LOCALE = 'br'
 

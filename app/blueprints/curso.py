@@ -1,6 +1,6 @@
 from flask import render_template, request, Blueprint, flash, redirect, url_for
 
-from app.models.curso import Curso, CursoCreateForm, CursoIndexForm, Status
+from app.models.curso import Curso, CursoCreateForm, CursoIndexForm
 from app.extensions import db
 from app.utils import sql_date_format, sql_ilike_format, parse_date
 
