@@ -1,0 +1,17 @@
+{% for message in get_flashed_messages(category_filter=["success"]) %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% for message in get_flashed_messages(category_filter=["warning"]) %}
+    <div class="alert alert-warning">
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% for message in get_flashed_messages(category_filter=["error"]) %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+{% endfor %}
