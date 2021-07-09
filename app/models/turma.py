@@ -6,30 +6,27 @@ from wtforms.validators import DataRequired, Length, ValidationError
 
 from app.extensions import db
 
+class Config(IntFlag):
+    INDISPONIVEL = auto()
+    PRE_AGENDADA = auto()
+
 class Turma(db.Model):
     __tablename__="turma"
     id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.String(20), nullable=False)
-    geminada = db.Column(db.Boolean, default=False, nullable=False)
-    aulas_num = db.Column(db.Integer, default=2, nullable=False)
-    etapa = db.Column(db.Integer, nullable=False)
-    periodo_letivo = db.Column(db.Enum(PeriodoLetivo), nullable=False)
-    campus_id = db.Column(db.Integer, db.ForeignKey('campus.id'), nullable=False)
     professor_id = db.Column(db.Integer, db.ForeignKey('professor.id'), nullable=False)
     disciplina_id = db.Column(db.Integer, db.ForeignKey('disciplina.id'), nullable=False)
-    indisponibilidade = db.relationship('TurmaIndisponibilidade', backref='turma', lazy=True)
-    pre_agendado = db.relationship('TurmaPreAgendada', backref='turma', lazy=True)
+    configs = db.relationship('TurmaConfig', backref='turma', lazy=True)
 
-class TurmaIndisponibilidade(db.Model):
-    __tablename__="turma_indisponibilidade"
+class TurmaConfig(db.Model):
+    __tablename__="turma_config"
     id = db.Column(db.Integer, primary_key=True)
     turma_id = db.Column(db.Integer, db.ForeignKey('turma.id'), nullable=False)
-    horario_id = db.Column(db.Integer, db.ForeignKey('horario.id'), nullable=False)
-    dia = db.Column(db.Enum(Dia), nullable=False)
+    periodo_id = db.Column(db.Integer, db.ForeignKey('periodo.id'), nullable=False)
+    config = db.Column(db.Enum(Config), nullable=False)
 
-class TurmaPreAgendada(db.Model):
-    __tablename__="turma_preagendada"
-    id = db.Column(db.Integer, primary_key=True)
-    turma_id = db.Column(db.Integer, db.ForeignKey('turma.id'), nullable=False)
-    horario_id = db.Column(db.Integer, db.ForeignKey('horario.id'), nullable=False)
-    dia = db.Column(db.Enum(Dia), nullable=False)
+class TurmaIndexForm(FlaskForm):
+    dia = SelectField('Dias', choices=[])
+
+class TurmaCreateForm(FlaskForm):
+    id = HiddenField()
+    dia = SelectField('Dias', choices=[] )

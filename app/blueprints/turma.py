@@ -1,6 +1,6 @@
 from flask import render_template, request, Blueprint, flash, redirect, url_for
 
-from app.models.turma import Turma, TurmaCreateForm, TurmaIndexForm, Status
+from app.models.turma import Turma, TurmaCreateForm, TurmaIndexForm
 from app.extensions import db
 from app.utils import sql_date_format, sql_ilike_format, parse_date
 

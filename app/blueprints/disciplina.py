@@ -1,6 +1,6 @@
 from flask import render_template, request, Blueprint, flash, redirect, url_for
 
-from app.models.disciplina import Disciplina, DisciplinaCreateForm, DisciplinaIndexForm, Status
+from app.models.disciplina import Disciplina, DisciplinaCreateForm, DisciplinaIndexForm
 from app.extensions import db
 from app.utils import sql_date_format, sql_ilike_format, parse_date
 

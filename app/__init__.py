@@ -4,8 +4,12 @@ from flask import Flask, render_template
 
 from app.extensions import db, csrf, migrate
 from app.settings import config
-from app.blueprints.curso import curso_bp
+
+from app.blueprints.turma import turma_bp
+from app.blueprints.periodo import periodo_bp
 from app.blueprints.professor import professor_bp
+from app.blueprints.grade import grade_bp
+from app.blueprints.disciplina import disciplina_bp
 
 def create_app(config_name=None):
     if config_name is None:
@@ -26,8 +30,11 @@ def register_extensions(app):
     migrate.init_app(app, db)
 
 def register_blueprints(app):
-    app.register_blueprint(curso_bp, url_prefix='/cursos')
     app.register_blueprint(professor_bp, url_prefix='/professores')
+    app.register_blueprint(turma_bp, url_prefix='/turmas')
+    app.register_blueprint(periodo_bp, url_prefix='/periodos')
+    app.register_blueprint(grade_bp, url_prefix='/grades')
+    app.register_blueprint(disciplina_bp, url_prefix='/disciplinas')
 
 def register_errors(app):
     @app.errorhandler(400)

@@ -15,31 +15,8 @@ class Professor(db.Model):
     turmas = db.relationship('Turma', backref='professor', lazy=True)
 
 class ProfessorIndexForm(FlaskForm):
-    descricao = StringField('Descrição', validators=[Length(0, 60)])
-    inicio = DateField('Inicio', format='%d/%m/%Y')
-    fim = DateField('Fim', format='%d/%m/%Y')
+    nome = StringField('Nome', validators=[Length(1, NAME_LIMIT)])
 
 class ProfessorCreateForm(FlaskForm):
-    codigo = HiddenField()
-    descricao = StringField('Descrição', validators=[DataRequired(), Length(1, 60)])
-    vencimento = DateField('Vencimento', format='%d/%m/%Y', validators=[DataRequired()])
-    valor = DecimalField('Valor', validators=[DataRequired()])
-    submit = SubmitField('Salvar')
-
-    def from_model(self, titulo):
-        self.status.default = titulo.status.name
-        self.process()
-
-        self.codigo.data = titulo.codigo
-        self.descricao.data = titulo.descricao
-        self.vencimento.data = titulo.vencimento
-        self.valor.data = titulo.valor
-
-
-    def validate_vencimento(self, field):
-        if (not self.codigo) and date.today() > field.data:
-            raise ValidationError('Vencimento não pode ser em data passada!')
-
-    def validate_valor(self, field):
-        if field.data > 1000000000.00:
-            raise ValidationError('Valor do titulo não pode ser maior que R$ 1.000.000.000,00')
+    id = HiddenField()
+    nome = StringField('Nome', validators=[DataRequired(), Length(1, 60)])
