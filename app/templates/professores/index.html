@@ -15,56 +15,108 @@ relevante sobre o cadastro e as pesquisas de professores
         <h3 class="text-center">Pesquisar</h3>
         <hr class="dropdown-divider">
 
-        <form action="GET" class="d-flex">
-            <div class="mb-3 col-md-11">
-                <label for="name" class="form-label">Filtro</label>
-                <input type="email" class="form-control" id="name">
-            </div>
+        <form method="GET" action="{{ url_for('.index') }}" class="form-horizontal">
+			<div class="row">
+				<div class="panel-body">
 
-            <div class="align-self-center mt-3 col-md-1">
-                <label>&nbsp;</label>
-                <button type="submit" class="btn btn-stradis"><i class="fa fa-search"></i></button>
-            </div>
-        </form>
+					{{ index_field(titulo_form.descricao, autofocus='autofocus', placeholder="Qual título você está procurando?") }}
+					{{ index_field(titulo_form.inicio, wdh=2, placeholder="Data de Inicio",
+						data_provide='datepicker', data_date_forceparse='false', data_date_format='dd/mm/yyyy', data_date_language='pt_BR', data_date_autoclose='true', data_date_today_highlight='true', data_date_orientation='bottom') }}
+					{{ index_field(titulo_form.fim, wdh=2, placeholder="Data Final",
+						data_provide='datepicker', data_date_forceparse='false', data_date_format='dd/mm/yyyy', data_date_language='pt_BR', data_date_autoclose='true', data_date_today_highlight='true', data_date_orientation='bottom') }}
+					
+					<div class="col-md-2">
+						<button type="submit" class="btn btn-default">
+							<span class="glyphicon glyphicon-search"></span>
+						</button>
 
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                <th>#</th>
-                <th>Nome</th>
-                <th class="col-md-1">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for prof in professores %}
+						<a class="btn btn-default" href="{{ url_for('.index') }}">Limpar</a>
+					</div>
+				</div>
+			</div>
+		</form>
+
+        <table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<th class="text-center col-md-1">#</th>
+					<th>Descrição</th>
+					<th class="text-center col-md-2">Data de vencimento</th>
+					<th class="text-right col-md-2">Valor</th>
+					<th class="text-center col-md-2">Status</th>
+					<th class="col-md-1"></th>
+				</tr>
+			</thead>
+			<tbody>
+                {% if titulos.items %}
+
+                    {% for titulo in titulos.items %}
+                        {% include 'titulos/_titulo.html' %}
+                    {% endfor %}
+
+                {% else %}
+				
                     <tr>
-                        <td>{{ prof.id }}</td>
-                        <td>{{ prof.nome }}</td>
-                        <td>
-                            <span class="d-flex justify-content-between">
-                                <a class="iconButton" href="#"><i class="fa fa-pencil-square-o"></i></a>
-                                <a class="iconButton" href="#"><i class="fa fa-trash"></i></a>
-                            </span>
-                        </td>
+                        <td colspan="6">Nenhum título foi encontrado</td>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                {% endif %}
+			</tbody>
+		</table>
+
+		<nav aria-label="Page navigation example">
+			<ul class="pagination">
+				{% if titulos.has_prev %}
+				  <li class="page-item"> <a class="page-link" href="{{ url_for('.index', page=titulos.prev_num) }}">Anterior</a></li>
+				{% else %}
+				  <li class="page-item"><a class="page-link btn disabled" href="#">Anterior</a></li>
+				{% endif %}
+  
+				{% for page in titulos.iter_pages(left_edge=3, right_edge=3) %}
+					{% if page %}
+			
+						{% if page==titulos.page %}
+							<li class="page-item active"><a class="page-link" href="{{ url_for('.index', page=page) }}">{{ page }}</a></li>
+						{% else %}
+							<li class="page-item"><a class="page-link" href="{{ url_for('.index', page=page) }}">{{ page }}</a></li>
+						{% endif %}
+			
+					{% else %}
+					
+					<li class="page-item disabled" id="example_ellipsis"><a href="#" class="page-link">…</a></li> 
+
+					{% endif %}
+				{% endfor %}
+
+				{% if titulos.has_next %}
+					<li class="page-item"> <a class="page-link" href="{{ url_for('.index', page=titulos.next_num) }}">Próximo</a></li>
+				{% else %}
+					<li class="page-item"><a class="page-link btn disabled" href="#">Próximo</a></li>
+				{% endif %}
+			</ul>
+		</nav>
 
     </div>
     <div class="p-5 flex-column card col-md-5">
         <h3 class="text-center">Cadastrar</h3>
         <hr class="dropdown-divider">
 
-        <form method="POST">
+        <form method="POST" action="{{ url_for('.new') }}">
             
-            {{ save_form.csrf_token }}
-            {{ form_field(save_form.nome) }}            
+            {{ titulo.codigo }}            
+        
+            {{ create_field(titulo.descricao, autofocus='autofocus') }}            
 
-            <div class="d-flex justify-content-center">
-                {{ save_form.submit(class_="btn btn-stradis col-md-4") }}
-            </div>
+            {{ create_field(titulo.vencimento, wdh=2,
+                        data_provide='datepicker', data_date_forceparse='false', data_date_format='dd/mm/yyyy', data_date_language='pt_BR', data_date_autoclose='true', data_date_today_highlight='true', data_date_orientation='bottom') }}
+            
+            {{ create_field(titulo.valor, wdh=2, classappend='numeric') }}
+
+            {{ create_field(titulo.status, wdh=2) }}
+            
+            {{ submit_field(titulo.submit) }}    
+            
         </form>
+
 
     </div>
 </div>

@@ -27,7 +27,7 @@ def index(page):
 
     return render_template('professores/index.html', professores=professores, titulo_form=professor)
 
-@professor_bp.route('/new', methods=['GET', 'POST'])
+@professor_bp.route('/', methods=['POST'])
 def new():
     titulo_form = ProfessorCreateForm()   
 
@@ -50,7 +50,7 @@ def new():
 
         professor.save()
 
-        flash('Titúlo salvo com sucesso!', 'success')
+        flash('Professor salvo com sucesso!', 'success')
 
         return redirect(url_for('professor.new'))
 

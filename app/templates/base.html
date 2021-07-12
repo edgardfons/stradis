@@ -30,7 +30,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
             
-                <a class="navbar-brand" id="navLogo" href="{{ url_for('index') }}">Stradis</a>
+                <a class="navbar-brand" id="navLogo" href="{{ url_for('index.index') }}">Stradis</a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,31 +41,27 @@
                     <ul class="navbar-nav">
 
                         <li class="nav-item">
-                            <a class="nav-link {{ 'active' if home_tab }}" aria-current="page" href="{{ url_for('index') }}">Programar Horários</a>
+                            <a class="nav-link {{ 'active' if home_tab }}" aria-current="page" href="{{ url_for('index.index') }}">Programar Horários</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link {{ 'active' if grade_tab }}" href="{{ url_for('grades') }}">Grades</a>
+                            <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professor.index') }}">Professores</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link {{ 'active' if prof_tab }}" href="{{ url_for('professores') }}">Professores</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ 'active' if disc_tab }}" href="{{ url_for('disciplinas') }}">Disciplinas</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ 'active' if curso_tab }}" href="{{ url_for('cursos') }}">Cursos</a>
+                            <a class="nav-link {{ 'active' if disc_tab }}" href="{{ url_for('disciplina.index') }}">Disciplinas</a>
                         </li>
                         
                         <li class="nav-item">
-                            <a class="nav-link {{ 'active' if turma_tab }}" href="{{ url_for('turmas') }}">Turmas</a>
+                            <a class="nav-link {{ 'active' if turma_tab }}" href="{{ url_for('turma.index') }}">Turmas</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link {{ 'active' if hora_tab }}" href="{{ url_for('horarios') }}">Horários</a>
+                            <a class="nav-link {{ 'active' if hora_tab }}" href="{{ url_for('periodo.index') }}">Periódos</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if grade_tab }}" href="{{ url_for('grade.index') }}">Grades</a>
                         </li>
             
                     </ul>

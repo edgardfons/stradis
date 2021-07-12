@@ -19,4 +19,4 @@ class ProfessorIndexForm(FlaskForm):
 
 class ProfessorCreateForm(FlaskForm):
     id = HiddenField()
-    nome = StringField('Nome', validators=[DataRequired(), Length(1, 60)])
+    nome = StringField('Nome', validators=[DataRequired(), Length(1, NAME_LIMIT)])

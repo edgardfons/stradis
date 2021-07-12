@@ -10,6 +10,7 @@ from app.blueprints.periodo import periodo_bp
 from app.blueprints.professor import professor_bp
 from app.blueprints.grade import grade_bp
 from app.blueprints.disciplina import disciplina_bp
+from app.blueprints.index import index_bp
 
 def create_app(config_name=None):
     if config_name is None:
@@ -35,6 +36,7 @@ def register_blueprints(app):
     app.register_blueprint(periodo_bp, url_prefix='/periodos')
     app.register_blueprint(grade_bp, url_prefix='/grades')
     app.register_blueprint(disciplina_bp, url_prefix='/disciplinas')
+    app.register_blueprint(index_bp)
 
 def register_errors(app):
     @app.errorhandler(400)
