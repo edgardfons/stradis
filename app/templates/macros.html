@@ -13,3 +13,39 @@
         {% endif %}
     </div> 
 {% endmacro %}
+
+{% macro index_field(field, wdh=4) -%}
+    <div class="mb-3 col-md-{{ wdh }}">
+        {{ field(class_='form-control', placeholder=field.label.text, **kwargs) }}
+    </div>    
+{%- endmacro %}
+
+
+{% macro create_field(field, wdh=4, classappend='') -%}
+    <div class="mb-3 {{ 'has-error' if field.errors else '' }}">
+        {{ field.label(class_="form-label") }}
+        {{ field(class_='form-control ' + classappend, **kwargs) }}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <small class="error">{{ error }}</small>
+            {% endfor %}
+        {% endif %}
+    </div>    
+{%- endmacro %}
+
+{% macro submit_field(field) -%}
+
+    <div class="d-flex justify-content-center">
+        {{ field(class_='btn btn-stradis col-md-4', **kwargs) }}
+    </div>  
+
+{%- endmacro %}
+
+{% macro submit_search_field() %}
+
+    <div class="align-self-center mt-3 col-md-1">
+        <label>&nbsp;</label>
+        <button type="submit" class="btn btn-stradis">Filtrar</button>
+    </div>
+
+{%- endmacro %}

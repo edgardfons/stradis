@@ -4,72 +4,68 @@ from app.models.professor import Professor, ProfessorCreateForm, ProfessorIndexF
 from app.extensions import db
 from app.utils import sql_date_format, sql_ilike_format, parse_date
 
+PAGE = 1
+PER_PAGE = 5
 professor_bp = Blueprint('professor', __name__)
 
 @professor_bp.route('/', defaults={"page": 1}) 
 @professor_bp.route('/<int:page>')
 def index(page):
     page = page
-    per_page = 10
+    per_page = PER_PAGE
 
-    professor = ProfessorIndexForm()
+    professor_form = ProfessorIndexForm()
     professores = Professor.query
 
-    professor.descricao.data = request.args.get('descricao')
-    professor.inicio.data = parse_date(request.args.get('inicio')) if request.args.get('inicio') else '' 
-    professor.fim.data = parse_date(request.args.get('fim')) if request.args.get('fim') else '' 
+    professor_form.nome.data = request.args.get('nome')
 
-    professores = professores.filter( Professor.descricao.ilike(sql_ilike_format(professor.descricao.data)) ) if professor.descricao.data else professores
-    professores = professores.filter( Professor.vencimento >= sql_date_format(professor.inicio.data) ) if professor.inicio.data else professores
-    professores = professores.filter( Professor.vencimento <= sql_date_format(professor.fim.data) ) if professor.fim.data else professores
+    professores = professores.filter( Professor.nome.ilike(sql_ilike_format(professor_form.nome.data)) ) if professor_form.nome.data else professores
 
-    professores = professores.order_by(Professor.codigo.desc()).paginate(page, per_page=per_page, error_out=True)
+    professores = professores.order_by(Professor.id.desc()).paginate(page, per_page=per_page, error_out=True)
 
-    return render_template('professores/index.html', professores=professores, titulo_form=professor)
+    return render_template('professores/index.html', professores=professores, professor_form=professor_form, professor=ProfessorCreateForm(), prof_tab=True)
 
-@professor_bp.route('/', methods=['POST'])
+@professor_bp.route('', methods=['POST'])
 def new():
-    titulo_form = ProfessorCreateForm()   
+    print('Edgard esteve aqui!')
+    professor_form = ProfessorCreateForm()   
 
-    if titulo_form.validate_on_submit():
+    if professor_form.validate_on_submit():
 
-        if titulo_form.codigo.data:
-            professor = Professor.query.get_or_404( titulo_form.codigo.data )
+        if professor_form.id.data:
+            professor = Professor.query.get_or_404( professor_form.id.data )
 
-            professor.descricao=titulo_form.descricao.data, 
-            professor.valor=titulo_form.valor.data, 
-            professor.vencimento=titulo_form.vencimento.data,
-            professor.status=titulo_form.status.data
+            professor.descricao=professor_form.nome.data
         else:
             professor = Professor(
-                descricao=titulo_form.descricao.data, 
-                valor=titulo_form.valor.data, 
-                vencimento=titulo_form.vencimento.data,
-                status=titulo_form.status.data
+                nome=professor_form.nome.data
             )
 
         professor.save()
 
         flash('Professor salvo com sucesso!', 'success')
 
-        return redirect(url_for('professor.new'))
+        return redirect(url_for('professor.index'))
 
-    print('Professor errors: ' + str(titulo_form.errors))
-    return render_template('professores/new.html', professor=titulo_form)
+    return render_template('professores/index.html', professor=professor_form)
 
-@professor_bp.route('/edit/<int:titulo_id>')
-def view(titulo_id):
-    professor = Professor.query.get_or_404(titulo_id)
-    titulo_form = ProfessorCreateForm()
+@professor_bp.route('/edit/<int:id>', methods=['GET'])
+def edit(id):
 
-    titulo_form.from_model(professor)
+    professor = Professor.query.get_or_404( id )
 
-    return render_template('professores/new.html', professor=titulo_form)
+    professor_form = ProfessorIndexForm()
+    professores = Professor.query.order_by(Professor.id.desc()).paginate(PAGE, per_page=PER_PAGE, error_out=True)
 
-@professor_bp.route('/delete/<int:titulo_id>', methods=['POST'])
-def delete(titulo_id):
-    professor = Professor.query.get_or_404(titulo_id)
+    return render_template('professores/index.html', professores=professores, professor_form=professor_form, professor=ProfessorCreateForm(professor), prof_tab=True)
+
+@professor_bp.route('/<int:id>', methods=['POST'])
+def delete(id):
+
+    professor = Professor.query.get_or_404( id )
 
     professor.delete()
+
+    flash('Professor excluido com sucesso!', 'success')
 
     return redirect(url_for('professor.index'))

@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% from 'macros.html' import form_field %}
+{% from 'macros.html' import index_field %}
+{% from 'macros.html' import submit_search_field %}
+{% from 'macros.html' import create_field %}
+{% from 'macros.html' import submit_field %}
 
 {% block title %}Professores{% endblock %}
 
@@ -15,49 +19,31 @@ relevante sobre o cadastro e as pesquisas de professores
         <h3 class="text-center">Pesquisar</h3>
         <hr class="dropdown-divider">
 
-        <form method="GET" action="{{ url_for('.index') }}" class="form-horizontal">
-			<div class="row">
-				<div class="panel-body">
+        <form method="GET" action="{{ url_for('.index') }}" class="d-flex">
+			{{ index_field(professor_form.nome, autofocus='autofocus') }}
 
-					{{ index_field(titulo_form.descricao, autofocus='autofocus', placeholder="Qual título você está procurando?") }}
-					{{ index_field(titulo_form.inicio, wdh=2, placeholder="Data de Inicio",
-						data_provide='datepicker', data_date_forceparse='false', data_date_format='dd/mm/yyyy', data_date_language='pt_BR', data_date_autoclose='true', data_date_today_highlight='true', data_date_orientation='bottom') }}
-					{{ index_field(titulo_form.fim, wdh=2, placeholder="Data Final",
-						data_provide='datepicker', data_date_forceparse='false', data_date_format='dd/mm/yyyy', data_date_language='pt_BR', data_date_autoclose='true', data_date_today_highlight='true', data_date_orientation='bottom') }}
-					
-					<div class="col-md-2">
-						<button type="submit" class="btn btn-default">
-							<span class="glyphicon glyphicon-search"></span>
-						</button>
-
-						<a class="btn btn-default" href="{{ url_for('.index') }}">Limpar</a>
-					</div>
-				</div>
-			</div>
+			{{ submit_search_field() }}
 		</form>
 
         <table class="table table-bordered table-striped">
 			<thead>
 				<tr>
 					<th class="text-center col-md-1">#</th>
-					<th>Descrição</th>
-					<th class="text-center col-md-2">Data de vencimento</th>
-					<th class="text-right col-md-2">Valor</th>
-					<th class="text-center col-md-2">Status</th>
-					<th class="col-md-1"></th>
+					<th>Nome</th>
+					<th class="col-md-1">Ações</th>
 				</tr>
 			</thead>
 			<tbody>
-                {% if titulos.items %}
+                {% if professores.items %}
 
-                    {% for titulo in titulos.items %}
-                        {% include 'titulos/_titulo.html' %}
+                    {% for professor_item in professores.items %}
+                        {% include 'professores/_item.html' %}
                     {% endfor %}
 
                 {% else %}
 				
                     <tr>
-                        <td colspan="6">Nenhum título foi encontrado</td>
+                        <td colspan="3" class="text-center">Nenhum professor registrado</td>
                     </tr>
                 {% endif %}
 			</tbody>
@@ -65,16 +51,16 @@ relevante sobre o cadastro e as pesquisas de professores
 
 		<nav aria-label="Page navigation example">
 			<ul class="pagination">
-				{% if titulos.has_prev %}
-				  <li class="page-item"> <a class="page-link" href="{{ url_for('.index', page=titulos.prev_num) }}">Anterior</a></li>
+				{% if professores.has_prev %}
+				  <li class="page-item"> <a class="page-link" href="{{ url_for('.index', page=professores.prev_num) }}">Anterior</a></li>
 				{% else %}
 				  <li class="page-item"><a class="page-link btn disabled" href="#">Anterior</a></li>
 				{% endif %}
   
-				{% for page in titulos.iter_pages(left_edge=3, right_edge=3) %}
+				{% for page in professores.iter_pages(left_edge=3, right_edge=3) %}
 					{% if page %}
 			
-						{% if page==titulos.page %}
+						{% if page==professores.page %}
 							<li class="page-item active"><a class="page-link" href="{{ url_for('.index', page=page) }}">{{ page }}</a></li>
 						{% else %}
 							<li class="page-item"><a class="page-link" href="{{ url_for('.index', page=page) }}">{{ page }}</a></li>
@@ -87,8 +73,8 @@ relevante sobre o cadastro e as pesquisas de professores
 					{% endif %}
 				{% endfor %}
 
-				{% if titulos.has_next %}
-					<li class="page-item"> <a class="page-link" href="{{ url_for('.index', page=titulos.next_num) }}">Próximo</a></li>
+				{% if professores.has_next %}
+					<li class="page-item"> <a class="page-link" href="{{ url_for('.index', page=professores.next_num) }}">Próximo</a></li>
 				{% else %}
 					<li class="page-item"><a class="page-link btn disabled" href="#">Próximo</a></li>
 				{% endif %}
@@ -96,29 +82,25 @@ relevante sobre o cadastro e as pesquisas de professores
 		</nav>
 
     </div>
+
     <div class="p-5 flex-column card col-md-5">
         <h3 class="text-center">Cadastrar</h3>
         <hr class="dropdown-divider">
 
         <form method="POST" action="{{ url_for('.new') }}">
             
-            {{ titulo.codigo }}            
+			{% include '_mensagens.html' %}
+    		{{ professor.csrf_token }}
+
+            {{ professor.codigo }}            
         
-            {{ create_field(titulo.descricao, autofocus='autofocus') }}            
-
-            {{ create_field(titulo.vencimento, wdh=2,
-                        data_provide='datepicker', data_date_forceparse='false', data_date_format='dd/mm/yyyy', data_date_language='pt_BR', data_date_autoclose='true', data_date_today_highlight='true', data_date_orientation='bottom') }}
+            {{ create_field(professor.nome) }}
             
-            {{ create_field(titulo.valor, wdh=2, classappend='numeric') }}
-
-            {{ create_field(titulo.status, wdh=2) }}
-            
-            {{ submit_field(titulo.submit) }}    
+            {{ submit_field(professor.submit) }}    
             
         </form>
-
-
     </div>
+
 </div>
 
 {% endblock %}
