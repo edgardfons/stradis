@@ -4,7 +4,7 @@ body {
     font-family: 'Lato', sans-serif;
     box-sizing: border-box;
     font-weight: normal;
-    font-style: normal; 
+    font-style: normal;
 }
 
 h1,
@@ -67,19 +67,54 @@ body {
     border-color: #2A9D8F;
 }
 
-.btn-stradis:hover, .btn-stradis:active, .btn-stradis:focus {
+.page-item .page-link{
+    color: #2A9D8F;
+}
+
+.page-item.active .page-link{
+    background-color: #2A9D8F;
+    border-color: #2A9D8F;
+    color: #fff;
+}
+
+
+.page-item.disabled .page-link{
+    cursor:not-allowed !important;
+}
+
+.disabled:hover {
+    cursor: not-allowed !important;
+}
+
+.btn-stradis:hover,
+.btn-stradis:active,
+.btn-stradis:focus {
     background-color: #30b5a6;
     color: #fff;
     border-color: #30b5a6;
 }
 
-.iconButton{
+.iconButton {
     color: #2A9D8F;
     font-size: 20px;
 }
 
-.iconButton:hover{
+.iconButton:hover {
     color: #30b5a6;
+}
+
+.btn-link {
+    color: #fff;
+}
+
+.btn-link:hover {
+    color: #30b5a6;
+}
+
+.btn-custom{
+    color: #fff !important;
+    font-size: 11px !important;
+    margin: 2px;
 }
 
 

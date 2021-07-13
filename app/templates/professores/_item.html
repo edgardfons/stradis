@@ -3,19 +3,13 @@
     <td>{{ professor_item.nome }}</td>
     <td>
 
-        <span class="d-flex justify-content-between">
-            <a class="iconButton" href="{{ url_for('.edit', id=professor_item.id) }}"><i class="fa fa-pencil-square-o"></i></a>
-
-            <form method="POST" action="{{ url_for('.delete', id=professor_item.id) }}">
-
-                {{ professor.csrf_token }}
-
-                <input type="hidden" name="_method" value="DELETE"/>
-    
-                <button type="submit"><i class="fa fa-trash"></i></button>
-    
-            </form>
+        <span class="d-flex items-center">
+            <a class="btn btn-custom btn-info" href="{{ url_for('.edit', id=professor_item.id) }}">Editar</a>
             
+            <form method="POST" action="{{ url_for('.delete', id=professor_item.id) }}">
+                {{ professor.csrf_token }}
+                <button type="submit" class="btn btn-custom btn-danger">Remover</button>
+            </form>
         </span>
 
     </td>

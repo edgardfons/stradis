@@ -14,8 +14,8 @@
     </div> 
 {% endmacro %}
 
-{% macro index_field(field, wdh=4) -%}
-    <div class="mb-3 col-md-{{ wdh }}">
+{% macro index_field(field, wdh=10) -%}
+    <div class="col-md-{{ wdh }}">
         {{ field(class_='form-control', placeholder=field.label.text, **kwargs) }}
     </div>    
 {%- endmacro %}
@@ -35,16 +35,15 @@
 
 {% macro submit_field(field) -%}
 
-    <div class="d-flex justify-content-center">
-        {{ field(class_='btn btn-stradis col-md-4', **kwargs) }}
+    <div>
+        {{ field(class_='btn btn-stradis col-md-4 align-self-center', **kwargs) }}
     </div>  
 
 {%- endmacro %}
 
 {% macro submit_search_field() %}
 
-    <div class="align-self-center mt-3 col-md-1">
-        <label>&nbsp;</label>
+    <div class="col-md-2">
         <button type="submit" class="btn btn-stradis">Filtrar</button>
     </div>
 
