@@ -1,6 +1,6 @@
 from app.extensions import db
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, HiddenField
+from wtforms import IntegerField, HiddenField, SubmitField
 
 class Entity(db.Model):
     __abstract__ = True
@@ -19,3 +19,4 @@ class EntityIndexForm(FlaskForm):
 
 class EntityCreateForm(FlaskForm):
     id = HiddenField()
+    submit = SubmitField('Cadastrar')

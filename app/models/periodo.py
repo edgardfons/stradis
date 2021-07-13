@@ -4,6 +4,7 @@ from datetime import datetime, date
 from wtforms import StringField, DateField, DecimalField, HiddenField, SelectField, SubmitField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, ValidationError
 
+from .entity import Entity, EntityCreateForm, EntityIndexForm
 from app.extensions import db
 
 class Dias(IntFlag):
@@ -15,19 +16,21 @@ class Dias(IntFlag):
     SEX = auto()
     SAB = auto()
 
-class Periodo(db.Model):
+    @staticmethod
+    def select_list():
+        return map(lambda dia: (dia.value, dia.name), list(Dias))
+
+class Periodo(Entity):
     __tablename__= "periodo"
-    id = db.Column(db.Integer, primary_key=True)
     inicio = db.Column(db.Integer, nullable=False)
     fim = db.Column(db.Integer, nullable=False)
-    dia = db.Column(db.Integer, nullable=False)
+    dia = db.Column(db.Enum(Dias), nullable=False)
 
     def desc(self):
         return self.dia + ' ' + self.inicio + ' ' + self.fim
 
-class PeriodoIndexForm(FlaskForm):
-    dia = SelectMultipleField('Dias', choices=[])
+class PeriodoIndexForm(EntityIndexForm):
+    dia = SelectMultipleField('Dias', choices=Dias.select_list())
 
-class PeriodoCreateForm(FlaskForm):
-    id = HiddenField()
-    dia = SelectMultipleField('Dias', choices=[] )
+class PeriodoCreateForm(EntityCreateForm):
+    dia = SelectMultipleField('Dias', choices=Dias.select_list())

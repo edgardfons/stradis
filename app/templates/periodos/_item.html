@@ -1,0 +1,24 @@
+<tr>
+    <td class="text-center">{{ periodo_item.id }}</td>
+    <td>{{ periodo_item.dia }}</td>
+    <td >{{ periodo_item.inicio }}</td>
+    <td >{{ periodo_item.fim }}</td>
+    <td>
+
+        <span class="d-flex justify-content-between">
+            <a class="iconButton" href="{{ url_for('.edit', id=periodo_item.id) }}"><i class="fa fa-pencil-square-o"></i></a>
+
+            <form method="POST" action="{{ url_for('.delete', id=periodo_item.id) }}">
+
+                {{ periodo.csrf_token }}
+
+                <input type="hidden" name="_method" value="DELETE"/>
+    
+                <button type="submit"><i class="fa fa-trash"></i></button>
+    
+            </form>
+            
+        </span>
+
+    </td>
+</tr>

@@ -18,4 +18,3 @@ class ProfessorIndexForm(EntityIndexForm):
 
 class ProfessorCreateForm(EntityCreateForm):
     nome = StringField('Nome', validators=[DataRequired(), Length(1, NAME_LIMIT)])
-    submit = SubmitField('Cadastrar')
