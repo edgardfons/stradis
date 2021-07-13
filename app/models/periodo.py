@@ -1,11 +1,10 @@
-from enum import Enum, IntFlag, auto
-from flask_wtf import FlaskForm
-from datetime import datetime, date
-from wtforms import StringField, DateField, DecimalField, HiddenField, SelectField, SubmitField, SelectMultipleField
-from wtforms.validators import DataRequired, Length, ValidationError
+from enum import IntFlag, auto
+from wtforms import SelectMultipleField
 
 from .entity import Entity, EntityCreateForm, EntityIndexForm
 from app.extensions import db
+
+NAME_LIMIT = 50
 
 class Dias(IntFlag):
     DOM = auto()
@@ -20,14 +19,20 @@ class Dias(IntFlag):
     def select_list():
         return map(lambda dia: (dia.value, dia.name), list(Dias))
 
+    @staticmethod
+    def padroes():
+        return (Dias.SEG, Dias.TER, Dias.QUA, Dias.QUI, Dias.SEX)
+
+
 class Periodo(Entity):
     __tablename__= "periodo"
+    nome = db.Column(db.String(NAME_LIMIT))
     inicio = db.Column(db.Integer, nullable=False)
     fim = db.Column(db.Integer, nullable=False)
-    dia = db.Column(db.Enum(Dias), nullable=False)
+    grades = db.relationship('GradeTurma', backref='periodo', lazy=True)
 
     def desc(self):
-        return self.dia + ' ' + self.inicio + ' ' + self.fim
+        return str(self.inicio) + '-' + str(self.fim)
 
 class PeriodoIndexForm(EntityIndexForm):
     dia = SelectMultipleField('Dias', choices=Dias.select_list())

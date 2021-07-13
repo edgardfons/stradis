@@ -7,11 +7,12 @@ Testes do solver
 
 '''
 import numpy as np
-from pulp import *
-from models import *
 import re
+
+from pulp import *
 from time import perf_counter
 
+from .models.grade import *
 
 EVENT_CONFLCT_WEIGHT = 1000
 IDLE_CONFLICT_WEIGHT = 100
@@ -33,10 +34,6 @@ class Conjuntos:
     def horarios(self):
         return list( map(lambda hora: str(hora.id), self.hours) )
 
-    # Convert list of objects (Horario) to list of ints string (ids)
-    def horarios_finais(self):
-        return list( map(lambda hora: str(hora.id), list(filter(lambda h: h.utlimo_dia, self.hours))) )
-
     # Convert list of objects (Professor) to list of ints string (ids)
     def professores(self):
         return list( map(lambda prof: str(prof.id), self.teachers) )
@@ -48,10 +45,8 @@ class Conjuntos:
         return list( map(lambda event: str(event.id), self.events) )
 
     def turmas_simples(self):
-        return list( map(lambda event: str(event.id), list(filter(lambda ev: not ev.geminada, self.events))) )
-
-    def turmas_geminadas(self):
-        return list( map(lambda event: str(event.id), list(filter(lambda ev: ev.geminada, self.events))) )
+        # return list( map(lambda event: str(event.id), list(filter(lambda ev: not ev.geminada, self.events))) )
+        return list( map(lambda event: str(event.id), self.events) )
 
     def turmas_professor(self):
         
@@ -77,7 +72,7 @@ class Conjuntos:
         
         for event_index, event in enumerate(self.events):
 
-            indis = list( map(lambda ind: (ind.dia.name, str(ind.horario_id)), event.indisponibilidade ) )
+            indis = list( map(lambda ind: (ind.dia.name, str(ind.horario_id)), event.indisponibilidade() ) )
             
             for day_index, day in enumerate(self.dias()):
 
@@ -94,7 +89,7 @@ class Conjuntos:
 
         for event_index, event in enumerate(self.events):
 
-            pre_agen = list( map(lambda ind: (str(ind.dia.name), str(ind.horario_id)),  event.pre_agendado ) )
+            pre_agen = list( map(lambda ind: (str(ind.dia.name), str(ind.horario_id)),  event.pre_agendado() ) )
 
             for day_index, day in enumerate(self.dias()):
 
@@ -124,56 +119,24 @@ class Conjuntos:
 
         return conflict
 
-    def turmas_campus(self):
-
-        len_events = len(self.events)
-        campus = [ [0] * len_events for i in range(len_events)]
-
-        for j in range(len_events):
-
-            ev2 = self.events[j]
-
-            for i in range(j+1, len_events):
-                
-                ev1 = self.events[i]
-
-                if ev1.campus_id != ev2.campus_id:
-                    campus[i][j] = 1
-
-        return campus
-
     def turmas_num(self):
         return [event.aulas_num for event in self.events]
-
-
-def dias_padrao():
-    '''
-        Retorna dias uteis representados pelo enum Dia
-    '''
-    exclu = Dia.DOM | Dia.SAB
-    days = list( filter(lambda dia: dia not in exclu, list(Dia)) )
-
-    return days
-
 
 def solve(conj):
 
     # Creating the sets
     days_of_week = conj.dias()
     hours_days = conj.horarios()
-    final_of_day = conj.horarios_finais()
 
     teachers = conj.professores()
     terms = conj.etapas()
 
     events = conj.turmas()
     events_simples = conj.turmas_simples()
-    events_geminados = conj.turmas_geminadas()
     events_number = conj.turmas_num()
     events_availability = conj.turmas_disponibilidade()
     events_pre_schedule = conj.turmas_preagendadas()
     events_conflict = conj.turmas_conflitos()
-    events_campus = conj.turmas_campus()
 
     # Adding model elemets
     teacher_events = conj.turmas_professor()
@@ -183,7 +146,6 @@ def solve(conj):
     events_number = makeDict([events], events_number, 0)
     events_availability = makeDict([events,days_of_week,hours_days], events_availability, 0)
     events_pre_schedule = makeDict([events,days_of_week,hours_days], events_pre_schedule, 0)
-    events_campus = makeDict([events,events], events_campus, 0)
 
     prob = LpProblem("UniversityCourseTimetabling", LpMinimize)
 
@@ -191,7 +153,6 @@ def solve(conj):
     conflict = LpVariable.dicts("Conflicted", (events, events, days_of_week, hours_days), 0, 1, LpInteger)
     scheduled = LpVariable.dicts("Scheduled", (events, days_of_week, hours_days), 0, 1, LpInteger)
     pre_hour_scheduled = LpVariable.dicts("PreHourScheduled", (events, hours_days), 0, 1, LpInteger)
-    start_events_geminados_schedule = LpVariable.dicts("StarEventsGeminados", (events, days_of_week, hours_days), 0, 1, LpInteger)
     term_min_day_hour_event = LpVariable.dicts("TermMinDayHourEvent", (terms, days_of_week, hours_days), 0, 1, LpInteger)
     idle_term_day_hour = LpVariable.dicts("IdleTermDayHour", (terms, days_of_week, hours_days), 0, 1, LpInteger)
     exceding_term_day_hour = LpVariable.dicts("ExcedingEventsTermDayHour", (terms, days_of_week, hours_days), 0, None, LpInteger)
@@ -205,8 +166,6 @@ def solve(conj):
     events_simples_days_indexes = [ (es, d) for es in events_simples for d in days_of_week if days_of_week.index(d) < len(days_of_week) - 1]
     events_simples_days_indexes_2 = [ (es, d1, d2) for es in events_simples if events_number[es] == 2 for d1 in days_of_week for d2 in days_of_week if days_of_week.index(d2) >= days_of_week.index(d1) + 3]
     events_simples_hours = [ (es, h) for es in events_simples for h in hours_days ]
-    events_geminados_days_hours_not_final = [ (eg, d, h) for eg in events_geminados for d in days_of_week for h in hours_days if h not in final_of_day ]
-    events_days_hours_campus = [ (e1, e2, d, h) for e1 in events for e2 in events if events.index(e1) > events.index(e2) and events_campus[e1][e2] > 0 for d in days_of_week for h in hours_days if h not in final_of_day ]
     term_days_hours = [ (t, d, h) for t in terms for d in days_of_week for h in hours_days ]
     term_days_hours_2 = [ (t, d, h1, h2, h3) for t in terms for d in days_of_week for h1 in hours_days for h2 in hours_days for h3 in hours_days if hours_days.index(h1) < hours_days.index(h2) and hours_days.index(h2) < hours_days.index(h3)]
 
@@ -240,22 +199,6 @@ def solve(conj):
     # (7)
     for (es, h) in events_simples_hours:
         prob += events_number[es] * pre_hour_scheduled[es][h] == lpSum([scheduled[es][d][h] for d in days_of_week]), "Event_%s_pre_scheduled_to_%s_in_day_%s" % (es, h, d)
-
-    # (8)
-    for (eg, d, h) in events_geminados_days_hours_not_final:
-        prob += start_events_geminados_schedule[eg][d][h] <= scheduled[eg][d][h], "Event_geminado_%s_starts_%s_at_%s" % (eg, h, d)
-
-    # (9)
-    for (eg, d, h) in events_geminados_days_hours_not_final:
-        prob += start_events_geminados_schedule[eg][d][h] <= scheduled[eg][d][ hours_days[hours_days.index(h) + 1] ], "Event_geminado_%s_ends_%s_at_%s" % (eg, hours_days[hours_days.index(h) + 1], d)
-
-    # (10)
-    for eg in events_geminados:
-        prob += lpSum( [start_events_geminados_schedule[eg][d][h] for d in days_of_week for h in hours_days if h not in final_of_day] ) == 1, "Event_geminado_%s_occours_only_once"%eg
-
-    # (11)
-    for (e1, e2, d, h) in events_days_hours_campus:
-        prob += scheduled[e1][d][h] + scheduled[e2][d][h] <= 1, "Events_%s_and_%s_in_different_campus_at_%s_%s_not_sequential" % (e1, e2, d, h)
 
     # (12)
     for (t, d, h) in term_days_hours:
@@ -319,14 +262,12 @@ def timetable(variables, conj):
 
         # scheduled[event_index][day_index][hour_index] = 1
         grade_entradas.append( 
-            GradeEntrada(
+            GradeTurma(
                 dia=conj.days[day_index],
-                horario=conj.hours[hour_index].desc(),
-                disciplina=conj.events[event_index].disciplina.nome,
-                professor=conj.events[event_index].professor.nome,
-                ordem=conj.hours[hour_index].ordem
+                periodo_id=conj.hours[hour_index].id,
+                turma_id=conj.events[event_index].id
             )
          )
 
-    return Grade(professores=len(conj.professores()), turmas=len(conj.turmas()), entradas=grade_entradas)
+    return Grade(entradas=grade_entradas)
 

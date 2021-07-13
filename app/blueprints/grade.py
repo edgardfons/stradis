@@ -4,72 +4,76 @@ from app.models.grade import Grade, GradeCreateForm, GradeIndexForm
 from app.extensions import db
 from app.utils import sql_date_format, sql_ilike_format, parse_date
 
+from app.models.periodo import Periodo, Dias
+
+PAGE = 1
+PER_PAGE = 5
 grade_bp = Blueprint('grade', __name__)
 
 @grade_bp.route('/', defaults={"page": 1}) 
 @grade_bp.route('/<int:page>')
 def index(page):
     page = page
-    per_page = 10
+    per_page = PER_PAGE
 
-    grade = GradeIndexForm()
+    grade_form = GradeIndexForm()
     grades = Grade.query
-
-    grade.descricao.data = request.args.get('descricao')
-    grade.inicio.data = parse_date(request.args.get('inicio')) if request.args.get('inicio') else '' 
-    grade.fim.data = parse_date(request.args.get('fim')) if request.args.get('fim') else '' 
-
-    grades = grades.filter( Grade.descricao.ilike(sql_ilike_format(grade.descricao.data)) ) if grade.descricao.data else grades
-    grades = grades.filter( Grade.vencimento >= sql_date_format(grade.inicio.data) ) if grade.inicio.data else grades
-    grades = grades.filter( Grade.vencimento <= sql_date_format(grade.fim.data) ) if grade.fim.data else grades
 
     grades = grades.order_by(Grade.codigo.desc()).paginate(page, per_page=per_page, error_out=True)
 
-    return render_template('grades/index.html', grades=grades, titulo_form=grade)
+    return render_template('grades/index.html', grades=grades, grade_form=grade_form, grade_tab=True)
 
-@grade_bp.route('/new', methods=['GET', 'POST'])
+@grade_bp.route('', methods=['POST'])
 def new():
-    titulo_form = GradeCreateForm()   
+    
+    grade_form = GradeCreateForm()   
 
-    if titulo_form.validate_on_submit():
+    if grade_form.validate_on_submit():
 
-        if titulo_form.codigo.data:
-            grade = Grade.query.get_or_404( titulo_form.codigo.data )
+        conj = Conjuntos(
+            days=Dias.padroes(), 
+            hours=Periodo.query.all(),
+            teachers=Professor.query.all(),
+            terms=NUM_ETAPAS,
+            events=Turma.query.all()
+        )
 
-            grade.descricao=titulo_form.descricao.data, 
-            grade.valor=titulo_form.valor.data, 
-            grade.vencimento=titulo_form.vencimento.data,
-            grade.status=titulo_form.status.data
-        else:
-            grade = Grade(
-                descricao=titulo_form.descricao.data, 
-                valor=titulo_form.valor.data, 
-                vencimento=titulo_form.vencimento.data,
-                status=titulo_form.status.data
-            )
-
+        grade = solve(conj)
+    
+        grade.semestre_letivo = grade_form.semestre.data
         grade.save()
 
-        flash('Titúlo salvo com sucesso!', 'success')
+        flash('Grade salvo com sucesso!', 'success')
 
-        return redirect(url_for('grade.new'))
+        return redirect(url_for('grade.index'))
 
-    print('Grade errors: ' + str(titulo_form.errors))
-    return render_template('grades/new.html', grade=titulo_form)
+    return render_template('gradees/index.html', grade=grade_form)
 
-@grade_bp.route('/edit/<int:titulo_id>')
-def view(titulo_id):
-    grade = Grade.query.get_or_404(titulo_id)
-    titulo_form = GradeCreateForm()
+@grade_bp.route('/view/<int:id>', methods=['GET'])
+def view(id):
 
-    titulo_form.from_model(grade)
+    grade = Grade.query.get_or_404( id )
+    entradas = {}
+    periodos = Periodo.query.order_by(Periodo.inicio.asc()).all()
 
-    return render_template('grades/new.html', grade=titulo_form)
+    for ent in grade.entradas:
+        if not ent.dia in entradas.keys():
+            entradas[ent.dia] = {}
 
-@grade_bp.route('/delete/<int:titulo_id>', methods=['POST'])
-def delete(titulo_id):
-    grade = Grade.query.get_or_404(titulo_id)
+        if not ent.periodo.id in entradas[ent.dia].keys():
+            entradas[ent.dia][ent.periodo.id] = []
+        
+        entradas[ent.dia][ent.periodo.id].append( ent.turma.disciplina.nome )
+
+    return render_template('grades/view.html', dias=Dias.padroes(), entradas=entradas, periodos=periodos, grade=grade, grade_tab=True)
+
+@grade_bp.route('/<int:id>', methods=['POST'])
+def delete(id):
+
+    grade = Grade.query.get_or_404( id )
 
     grade.delete()
+
+    flash('Grade excluido com sucesso!', 'success')
 
     return redirect(url_for('grade.index'))

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% from 'macros.html' import form_field %}
 
-{% block title %}Grade {{ grade.id }}{% endblock %}
+{% block title %}Grade - {{ grade.id }}{% endblock %}
 
 {% block content %}
 
@@ -14,23 +14,25 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>Horários</th>
-                    <th>Nome</th>
-                    <th>Disciplinas</th>
-                    <th>Professores</th>
-                    <th>Criada</th>
+                    <th></th>
+                    {% for dia in dias %}
+                        <th>{{dia.name}}</th>
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody>
-                {% for grade in grades %}
+                {% for periodo in periodos %}
                     <tr>
-                        <td>{{ grade.id }}</td>
-                        <td>{{ grade.nome }}</td>
-                        <td>{{ grade.disciplinas }}</td>
-                        <td>{{ grade.professores }}</td>
-                        <td>{{ grade.criada }}</td>
-                        <td>
-                        </td>
+                        <td>{{ periodo.desc() }}</td>
+                        
+                        {% for dia in dias %}
+                            <td>
+                                {% for entrada in entradas[dia][periodo.id] %}
+                                    <p>{{ entrada }}</p>
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                       
                     </tr>
                 {% endfor %}
             </tbody>

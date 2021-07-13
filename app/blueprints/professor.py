@@ -27,7 +27,6 @@ def index(page):
 
 @professor_bp.route('', methods=['POST'])
 def new():
-    print('Edgard esteve aqui!')
     professor_form = ProfessorCreateForm()   
 
     if professor_form.validate_on_submit():
