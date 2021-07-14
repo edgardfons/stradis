@@ -1,7 +1,7 @@
 from .models.periodo import Periodo, Dias
 from .models.professor import Professor
 from .models.disciplina import Disciplina
-from .models.turma import Turma
+from .models.turma import Turma, TurmaConfig, Config
 from .solver import *
 
 # Constants
@@ -100,7 +100,8 @@ def disciplinas():
     Disciplina(nome='ADMINISTRAÇÃO PARA COMPUTAÇÃO', codigo='CT-054').save()
 
 def turmas():
-    Turma(codigo='1515', aulas_num=3, disciplina_id=1, professor_id=1, etapa=1).save()
+    Turma(codigo='1515', aulas_num=3, disciplina_id=1, professor_id=1, etapa=1, 
+        configs=[ TurmaConfig(dia=Dias.SEG,periodo_id=1,config=Config.INDISPONIVEL),TurmaConfig(dia=Dias.SEG,periodo_id=2,config=Config.INDISPONIVEL) ]).save()
     Turma(codigo='1516', aulas_num=2, disciplina_id=2, professor_id=21, etapa=1).save()
     Turma(codigo='1517', aulas_num=2, disciplina_id=3, professor_id=20, etapa=1).save()
     Turma(codigo='1518', aulas_num=2, disciplina_id=4, professor_id=21, etapa=1).save()

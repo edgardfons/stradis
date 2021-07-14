@@ -64,7 +64,7 @@ class Conjuntos:
         
         for event_index, event in enumerate(self.events):
 
-            indis = list( map(lambda ind: (ind.dia.name, str(ind.horario_id)), event.indisponibilidade() ) )
+            indis = list( map(lambda ind: (ind.dia.name, str(ind.periodo_id)), event.indisponibilidade() ) )
             
             for day_index, day in enumerate(self.dias()):
 
@@ -81,7 +81,7 @@ class Conjuntos:
 
         for event_index, event in enumerate(self.events):
 
-            pre_agen = list( map(lambda ind: (str(ind.dia.name), str(ind.horario_id)),  event.pre_agendado() ) )
+            pre_agen = list( map(lambda ind: (str(ind.dia.name), str(ind.periodo_id)),  event.pre_agendado() ) )
 
             for day_index, day in enumerate(self.dias()):
 

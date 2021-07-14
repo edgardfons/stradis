@@ -19,7 +19,7 @@ def index(page):
     grade_form = GradeIndexForm()
     grades = Grade.query
 
-    grades = grades.order_by(Grade.codigo.desc()).paginate(page, per_page=per_page, error_out=True)
+    grades = grades.order_by(Grade.id.desc()).paginate(page, per_page=per_page, error_out=True)
 
     return render_template('grades/index.html', grades=grades, grade_form=grade_form, grade_tab=True)
 
