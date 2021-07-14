@@ -1,5 +1,5 @@
 from enum import IntFlag, auto
-from wtforms import StringField, DateField, DecimalField, HiddenField, SelectField, SubmitField
+from wtforms import StringField, IntegerField, SelectField
 
 from .periodo import Dias
 from .entity import Entity, EntityCreateForm, EntityIndexForm
@@ -36,7 +36,12 @@ class TurmaConfig(db.Model):
     config = db.Column(db.Enum(Config), nullable=False)
 
 class TurmaIndexForm(EntityIndexForm):
-    dia = SelectField('Dias', choices=[])
+    professor = SelectField('Professor')
+    disciplina = SelectField('Disciplina')
 
 class TurmaCreateForm(EntityCreateForm):
-    dia = SelectField('Dias', choices=[] )
+    codigo = StringField('Código')
+    professor = SelectField('Professor')
+    disciplina = SelectField('Disciplina')
+    etapa = IntegerField('Etapa')
+    aulas_num = IntegerField('Núm. Aulas')

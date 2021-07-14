@@ -1,0 +1,17 @@
+<tr>
+    <td class="text-center">{{ turma_item.id }}</td>
+    <td>{{ turma_item.professor.nome }}</td>
+    <td>{{ turma_item.disciplina.nome }}</td>
+    <td>
+
+        <span class="d-flex items-center">
+            <a class="btn btn-custom btn-info" href="{{ url_for('.edit', id=turma_item.id) }}">Editar</a>
+            
+            <form method="POST" action="{{ url_for('.delete', id=turma_item.id) }}">
+                {{ turma.csrf_token }}
+                <button type="submit" class="btn btn-custom btn-danger">Remover</button>
+            </form>
+        </span>
+
+    </td>
+</tr>
