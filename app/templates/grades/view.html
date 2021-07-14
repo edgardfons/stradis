@@ -8,6 +8,16 @@
 <h3 class="title">Grade {{ grade.id }}</h3>
 
 <div class="shadow p-1">
+    
+    <div class="container-fluid">
+        <div class="row">
+            {%for i in range(1, 10)%}
+                <div class="col etapa-{{i}}">
+                    <p>Semestre {{i}}º</p>
+                </div>
+            {%endfor%}
+        </div>
+    </div>
 
     <table class="table">
         <thead>
@@ -38,27 +48,6 @@
         </tbody>
     </table>
 
-    <!-- {% for periodo in periodos %}
-    <div class="shadow p-5 mb-5">
-        <h2 class="mb-3">{{periodo}}° Semestre</h2>
-        <div class="container-fluid">
-            <div class="row">
-            {% for dia in dias %}
-                <div class="col card d-flex justify-content-center align-items-center">
-                    <h5>{{dia.name}}</h5>
-                    {% for entrada in entradas[dia][periodo.id] %}
-                    <div class="card text-dark bg-light mb-3">
-                        <div class="card-header fw-bold">{{ entrada.disciplina.nome }}</div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-            {% endfor %}
-            </div>
-        </div>
-
-    </div>
-    {% endfor %} -->
 
 </div>
 
