@@ -1,7 +1,8 @@
 from enum import Enum, IntFlag, auto
 from flask_wtf import FlaskForm
 from datetime import datetime, date
-from wtforms import StringField, DateField, DecimalField, HiddenField, SelectField, SubmitField, SelectMultipleField
+from wtforms import StringField
+from wtforms.validators import DataRequired, Length
 
 from .entity import Entity, EntityCreateForm, EntityIndexForm
 from app.extensions import db
@@ -16,7 +17,9 @@ class Disciplina(Entity):
     turmas = db.relationship('Turma', backref='disciplina', lazy=True)
 
 class DisciplinaIndexForm(EntityIndexForm):
-    dia = SelectMultipleField('Dias', choices=[])
+    nome = StringField('Nome', validators=[Length(1, NAME_LIMIT)])
+    codigo = StringField('Código', validators=[Length(1, CODE_LIMIT)])
 
 class DisciplinaCreateForm(EntityCreateForm):
-    dia = SelectMultipleField('Dias', choices=[] )
+    nome = StringField('Nome', validators=[DataRequired(), Length(1, NAME_LIMIT)])
+    codigo = StringField('Código', validators=[DataRequired(), Length(1, CODE_LIMIT)])

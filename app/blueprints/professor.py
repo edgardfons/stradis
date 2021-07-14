@@ -1,8 +1,7 @@
 from flask import render_template, request, Blueprint, flash, redirect, url_for
 
 from app.models.professor import Professor, ProfessorCreateForm, ProfessorIndexForm
-from app.extensions import db
-from app.utils import sql_date_format, sql_ilike_format, parse_date
+from app.utils import sql_ilike_format
 
 PAGE = 1
 PER_PAGE = 5
@@ -34,7 +33,7 @@ def new():
         if professor_form.id.data:
             professor = Professor.query.get_or_404( professor_form.id.data )
 
-            professor.descricao=professor_form.nome.data
+            professor.nome=professor_form.nome.data
         else:
             professor = Professor(
                 nome=professor_form.nome.data

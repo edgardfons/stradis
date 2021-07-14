@@ -1,75 +1,73 @@
 from flask import render_template, request, Blueprint, flash, redirect, url_for
 
 from app.models.disciplina import Disciplina, DisciplinaCreateForm, DisciplinaIndexForm
-from app.extensions import db
-from app.utils import sql_date_format, sql_ilike_format, parse_date
+from app.utils import sql_ilike_format
 
+PAGE = 1
+PER_PAGE = 5
 disciplina_bp = Blueprint('disciplina', __name__)
 
 @disciplina_bp.route('/', defaults={"page": 1}) 
 @disciplina_bp.route('/<int:page>')
 def index(page):
     page = page
-    per_page = 10
+    per_page = PER_PAGE
 
-    disciplina = DisciplinaIndexForm()
+    disciplina_form = DisciplinaIndexForm()
     disciplinas = Disciplina.query
 
-    disciplina.descricao.data = request.args.get('descricao')
-    disciplina.inicio.data = parse_date(request.args.get('inicio')) if request.args.get('inicio') else '' 
-    disciplina.fim.data = parse_date(request.args.get('fim')) if request.args.get('fim') else '' 
+    disciplina_form.nome.data = request.args.get('nome')
+    disciplina_form.codigo.data = request.args.get('codigo')
 
-    disciplinas = disciplinas.filter( Disciplina.descricao.ilike(sql_ilike_format(disciplina.descricao.data)) ) if disciplina.descricao.data else disciplinas
-    disciplinas = disciplinas.filter( Disciplina.vencimento >= sql_date_format(disciplina.inicio.data) ) if disciplina.inicio.data else disciplinas
-    disciplinas = disciplinas.filter( Disciplina.vencimento <= sql_date_format(disciplina.fim.data) ) if disciplina.fim.data else disciplinas
+    disciplinas = disciplinas.filter( Disciplina.nome.ilike(sql_ilike_format(disciplina_form.nome.data)) ) if disciplina_form.nome.data else disciplinas
+    disciplinas = disciplinas.filter( Disciplina.codigo.ilike(sql_ilike_format(disciplina_form.codigo.data)) ) if disciplina_form.codigo.data else disciplinas
 
-    disciplinas = disciplinas.order_by(Disciplina.codigo.desc()).paginate(page, per_page=per_page, error_out=True)
+    disciplinas = disciplinas.order_by(Disciplina.id.desc()).paginate(page, per_page=per_page, error_out=True)
 
-    return render_template('disciplinas/index.html', disciplinas=disciplinas, titulo_form=disciplina)
+    return render_template('disciplinas/index.html', disciplinas=disciplinas, disciplina_form=disciplina_form, disciplina=DisciplinaCreateForm(), disc_tab=True)
 
-@disciplina_bp.route('/new', methods=['GET', 'POST'])
+@disciplina_bp.route('', methods=['POST'])
 def new():
-    titulo_form = DisciplinaCreateForm()   
+    disciplina_form = DisciplinaCreateForm()   
 
-    if titulo_form.validate_on_submit():
+    if disciplina_form.validate_on_submit():
 
-        if titulo_form.codigo.data:
-            disciplina = Disciplina.query.get_or_404( titulo_form.codigo.data )
+        if disciplina_form.id.data:
+            disciplina = Disciplina.query.get_or_404( disciplina_form.id.data )
 
-            disciplina.descricao=titulo_form.descricao.data, 
-            disciplina.valor=titulo_form.valor.data, 
-            disciplina.vencimento=titulo_form.vencimento.data,
-            disciplina.status=titulo_form.status.data
+            disciplina.nome=disciplina_form.nome.data
+            disciplina.codigo=disciplina_form.codigo.data
         else:
             disciplina = Disciplina(
-                descricao=titulo_form.descricao.data, 
-                valor=titulo_form.valor.data, 
-                vencimento=titulo_form.vencimento.data,
-                status=titulo_form.status.data
+                nome=disciplina_form.nome.data,
+                codigo=disciplina_form.codigo.data
             )
 
         disciplina.save()
 
-        flash('Titúlo salvo com sucesso!', 'success')
+        flash('Disciplina salvo com sucesso!', 'success')
 
-        return redirect(url_for('disciplina.new'))
+        return redirect(url_for('disciplina.index'))
 
-    print('Disciplina errors: ' + str(titulo_form.errors))
-    return render_template('disciplinas/new.html', disciplina=titulo_form)
+    return render_template('disciplinaes/index.html', disciplina=disciplina_form)
 
-@disciplina_bp.route('/edit/<int:titulo_id>')
-def view(titulo_id):
-    disciplina = Disciplina.query.get_or_404(titulo_id)
-    titulo_form = DisciplinaCreateForm()
+@disciplina_bp.route('/edit/<int:id>', methods=['GET'])
+def edit(id):
 
-    titulo_form.from_model(disciplina)
+    disciplina = Disciplina.query.get_or_404( id )
 
-    return render_template('disciplinas/new.html', disciplina=titulo_form)
+    disciplina_form = DisciplinaIndexForm()
+    disciplinaes = Disciplina.query.order_by(Disciplina.id.desc()).paginate(PAGE, per_page=PER_PAGE, error_out=True)
 
-@disciplina_bp.route('/delete/<int:titulo_id>', methods=['POST'])
-def delete(titulo_id):
-    disciplina = Disciplina.query.get_or_404(titulo_id)
+    return render_template('disciplinaes/index.html', disciplinaes=disciplinas, disciplina_form=disciplina_form, disciplina=DisciplinaCreateForm(disciplina), prof_tab=True)
+
+@disciplina_bp.route('/<int:id>', methods=['POST'])
+def delete(id):
+
+    disciplina = Disciplina.query.get_or_404( id )
 
     disciplina.delete()
+
+    flash('Disciplina excluido com sucesso!', 'success')
 
     return redirect(url_for('disciplina.index'))
