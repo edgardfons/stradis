@@ -2,7 +2,7 @@ from flask import render_template, request, Blueprint, flash, redirect, url_for
 
 from app.models.periodo import Periodo, PeriodoCreateForm, PeriodoIndexForm
 from app.extensions import db
-from app.utils import sql_date_format, sql_ilike_format, parse_date
+from app.utils import parse_hour
 
 PAGE = 1
 PER_PAGE = 5
@@ -17,15 +17,18 @@ def index(page):
     periodo_form = PeriodoIndexForm()
     periodos = Periodo.query
 
-    periodo_form.dia.data = request.args.get('dia')
+    periodo_form.inicio.data = request.args.get('inicio')
+    periodo_form.fim.data = request.args.get('fim')
+
+    periodos = periodos.filter_by( inicio=parse_hour(periodo_form.inicio.data) ) if periodo_form.inicio.data else periodos
+    periodos = periodos.filter_by( inicio=parse_hour(periodo_form.fim.data) ) if periodo_form.fim.data else periodos
 
     periodos = periodos.order_by(Periodo.id.desc()).paginate(page, per_page=per_page, error_out=True)
 
-    return render_template('periodos/index.html', periodos=periodos, periodo_form=periodo_form, periodo=PeriodoCreateForm(), prof_tab=True)
+    return render_template('periodos/index.html', periodos=periodos, periodo_form=periodo_form, periodo=PeriodoCreateForm(), hora_tab=True)
 
 @periodo_bp.route('', methods=['POST'])
 def new():
-    print('Edgard esteve aqui!')
     periodo_form = PeriodoCreateForm()   
 
     if periodo_form.validate_on_submit():
@@ -33,12 +36,12 @@ def new():
         if periodo_form.id.data:
             periodo = Periodo.query.get_or_404( periodo_form.id.data )
 
-            periodo.descricao=periodo_form.nome.data
+            periodo.inicio=parse_hour(periodo_form.inicio.data)
+            periodo.fim=parse_hour(periodo_form.fim.data)
         else:
             periodo = Periodo(
-                dia=periodo_form.dia.data,
-                inicio=periodo_form.inicio.data,
-                fim=periodo_form.fim.data
+                inicio=parse_hour(periodo_form.inicio.data),
+                fim=parse_hour(periodo_form.fim.data)
             )
 
         periodo.save()

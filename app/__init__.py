@@ -1,5 +1,6 @@
 import os
 import click
+import app.utils as utils
 
 from flask import Flask, render_template
 
@@ -23,6 +24,7 @@ def create_app(config_name=None):
     register_extensions(app)
     register_blueprints(app)
     register_errors(app)
+    register_filters(app)
 
     return app
 
@@ -59,3 +61,12 @@ def register_errors(app):
     @app.errorhandler(500)
     def internal_server_error(e):
         return render_template('errors.html', code=500, info='Server Error'), 500
+
+def register_filters(app):
+    @app.template_filter()
+    def parse_hour(value):
+        return utils.parse_hour(value)
+
+    @app.template_filter()
+    def format_hour(value):
+        return utils.format_hour(value)
