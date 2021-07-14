@@ -5,22 +5,26 @@
 
 {% block content %}
 
-<h1 class="logo">Grades</h1>
-<p class="stradisGuide">As grades criadas</p>
+<h1 class="title">Grades</h1>
+<p class="stradisGuide">Consulte as suas grades geradas</p>
 
 <div class="mt-3 d-flex justify-content-around col-md-12">
     
-    <div class="p-5 flex-column card col-md-12">
+    <div class="p-3 flex-column card col-md-12">
+
         <h3 class="text-center">Pesquisar</h3>
+
         <hr class="dropdown-divider">
 
+        <button type="button" class="btn btn-stradis align-self-end">Gerar nova</button>
         <form class="d-flex">
-            <div class="mb-3 col-md-11">
+
+            <div class="mb-3 col-md-10">
                 <label for="name" class="form-label">Filtro</label>
                 <input type="email" class="form-control" id="name">
             </div>
 
-            <div class="align-self-center mt-3 col-md-1">
+            <div class="align-self-center mt-3 col-md-2">
                 <label>&nbsp;</label>
                 <button type="submit" class="btn btn-stradis"><i class="fa fa-search"></i></button>
             </div>
@@ -31,25 +35,17 @@
                 <tr>
                     <th>#</th>
                     <th>Nome</th>
-                    <th>Disciplinas</th>
-                    <th>Professores</th>
                     <th>Criada</th>
                     <th class="col-md-1">Ações</th>
                 </tr>
             </thead>
             <tbody>
-                {% for grade in grades %}
+                {% for grade in grades.items %}
                     <tr>
                         <td>{{ grade.id }}</td>
                         <td>{{ grade.nome }}</td>
-                        <td>{{ grade.disciplinas }}</td>
-                        <td>{{ grade.professores }}</td>
                         <td>{{ grade.criada }}</td>
-                        <td>
-                            <span class="d-flex justify-content-between">
-                                <a class="iconButton" href="{{ url_for('grades', id=grade.id) }}"><i class="fa fa-eye"></i></a>
-                            </span>
-                        </td>
+              
                     </tr>
                 {% endfor %}
             </tbody>

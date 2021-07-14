@@ -16,8 +16,13 @@ h5 {
 }
 
 .logo,
-.navbar-brand {
+.navbar-brand,
+.title {
     font-family: 'Metamorphous', cursive;
+    color: #E76F51 !important;
+}
+
+.spotlight{
     color: #E76F51 !important;
 }
 
@@ -117,10 +122,3 @@ body {
     margin: 2px;
 }
 
-
-
-
-
-/* font-family: 'Lato', sans-serif;
-font-family: 'Lexend', sans-serif;
-font-family: 'Metamorphous', cursive; */

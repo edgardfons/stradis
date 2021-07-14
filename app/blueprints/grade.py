@@ -19,7 +19,7 @@ def index(page):
     grade_form = GradeIndexForm()
     grades = Grade.query
 
-    grades = grades.order_by(Grade.codigo.desc()).paginate(page, per_page=per_page, error_out=True)
+    grades = grades.order_by(Grade.id.desc()).paginate(page, per_page=per_page, error_out=True)
 
     return render_template('grades/index.html', grades=grades, grade_form=grade_form, grade_tab=True)
 
@@ -63,7 +63,7 @@ def view(id):
         if not ent.periodo.id in entradas[ent.dia].keys():
             entradas[ent.dia][ent.periodo.id] = []
         
-        entradas[ent.dia][ent.periodo.id].append( ent.turma.disciplina.nome )
+        entradas[ent.dia][ent.periodo.id].append( ent.turma )
 
     return render_template('grades/view.html', dias=Dias.padroes(), entradas=entradas, periodos=periodos, grade=grade, grade_tab=True)
 
