@@ -8,6 +8,16 @@
 <h3 class="title">Grade {{ grade.id }}</h3>
 
 <div class="shadow p-1">
+    
+    <div class="container-fluid">
+        <div class="row">
+            {%for i in range(1, 10)%}
+                <div class="col etapa-{{i}}">
+                    <p><a class="btn-link" href="{{ url_for('.view', id=grade.id, etapa=i) }}">Semestre {{i}}º</a></p>
+                </div>
+            {%endfor%}
+        </div>
+    </div>
 
     <table class="table">
         <thead>

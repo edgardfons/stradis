@@ -49,8 +49,9 @@ def new():
 
     return render_template('gradees/index.html', grade=grade_form)
 
-@grade_bp.route('/view/<int:id>', methods=['GET'])
-def view(id):
+@grade_bp.route('/view/<int:id>/<int:etapa>', methods=['GET'])
+@grade_bp.route('/view/<int:id>', defaults={"etapa": 0}, methods=['GET'])
+def view(id, etapa):
 
     grade = Grade.query.get_or_404( id )
     entradas = {}
@@ -63,9 +64,10 @@ def view(id):
         if not ent.periodo.id in entradas[ent.dia].keys():
             entradas[ent.dia][ent.periodo.id] = []
         
-        entradas[ent.dia][ent.periodo.id].append( ent.turma )
+        if etapa == 0 or ent.turma.etapa == etapa:
+            entradas[ent.dia][ent.periodo.id].append( ent.turma )
 
-    return render_template('grades/view.html', dias=Dias.padroes(), entradas=entradas, periodos=periodos, grade=grade, grade_tab=True)
+    return render_template('grades/view.html', dias=Dias.padroes(), entradas=entradas, periodos=periodos, grade=grade, etapa=etapa, grade_tab=True)
 
 @grade_bp.route('/<int:id>', methods=['POST'])
 def delete(id):
