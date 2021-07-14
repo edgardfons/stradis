@@ -63,7 +63,7 @@ def view(id):
         if not ent.periodo.id in entradas[ent.dia].keys():
             entradas[ent.dia][ent.periodo.id] = []
         
-        entradas[ent.dia][ent.periodo.id].append( ent.turma.disciplina.nome )
+        entradas[ent.dia][ent.periodo.id].append( ent.turma )
 
     return render_template('grades/view.html', dias=Dias.padroes(), entradas=entradas, periodos=periodos, grade=grade, grade_tab=True)
 

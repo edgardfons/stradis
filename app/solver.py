@@ -1,11 +1,3 @@
-'''
-
-Testes do solver
-
-1 teste: UECE
-2 teste: Random generated 
-
-'''
 import numpy as np
 import re
 
@@ -172,58 +164,50 @@ def solve(conj):
     # Objective function
     prob += lpSum([EVENT_CONFLCT_WEIGHT*conflict[e1][e2][d][h]*events_conflict[e1][e2] for e1 in events for e2 in events if events.index(e1) > events.index(e2) for d in days_of_week for h in hours_days]) + lpSum([IDLE_CONFLICT_WEIGHT*idle_term_day_hour[t][d][h] for t in terms for d in days_of_week for h in hours_days]) + lpSum([EXCEDING_WEIGHT*exceding_term_day_hour[t][d][h] for t in terms for d in days_of_week for h in hours_days]), "Sum_to_avoid_conflicts_excedings_idles"
 
-    # (1)
+    # (1) x
     for e in events:
         prob += lpSum([scheduled[e][d][h] for (d, h) in hour_day_indexes]) == events_number[e], "Sum_num_event_%s_equals_to_%s" % (e, events_number[e])
 
-    # (2)
+    # (2) x
     for (e, d, h) in scheduled_indexes:
         prob += scheduled[e][d][h] <= events_availability[e][d][h], "Event_%s_is_available_in_%s_%s" % (e, d, h)
 
-    # (3)
+    # (3) x
     for (t, d, h) in teacher_hour_day:
         prob += lpSum([scheduled[et][d][h] for et in teacher_events[t]]) <= 1, "Teacher_%s_conflict_in_%s_event_at_%s_%s" % (t, teacher_events[t], d, h)
-
-    # (4)
-    for (e, d, h) in scheduled_indexes:
-        prob += scheduled[e][d][h] >= events_pre_schedule[e][d][h], "Event_%s_is_pre_scheduled_in_%s_%s" % (e, d, h)
-
-    # (5)
+    
+    # (5) x
     for (es, d) in events_simples_days_indexes:
         prob += lpSum( [ (scheduled[es][d][h] + scheduled[es][ days_of_week[ days_of_week.index(d) + 1 ] ][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s" % (es, d, days_of_week[ days_of_week.index(d) + 1 ])
 
-    # (6)
+    # (6) x
     for (es, d1, d2) in events_simples_days_indexes_2:
         prob += lpSum([ (scheduled[es][d1][h] + scheduled[es][d2][h]) for h in hours_days]) <= 1, "Event_%s_is_scheduled_%s_and_not_in_%s_or_after" % (es, d1, d2)
 
-    # (7)
+    # (7) x
     for (es, h) in events_simples_hours:
         prob += events_number[es] * pre_hour_scheduled[es][h] == lpSum([scheduled[es][d][h] for d in days_of_week]), "Event_%s_pre_scheduled_to_%s_in_day_%s" % (es, h, d)
 
-    # (12)
+    # (8) x
     for (t, d, h) in term_days_hours:
         for e in term_events[t]:
             prob += term_min_day_hour_event[t][d][h] >= scheduled[e][d][h], "Event_%s_is_scheduled_in_term_%s_at_%s_%s" % (e, t, d, h)
 
-    # (13)
+    # (9) x
     for (t, d, h) in term_days_hours:
         prob += term_min_day_hour_event[t][d][h] <= lpSum([scheduled[e][d][h] for e in term_events[t]]), "N_Events_are_scheduled_in_term_%s_at_%s_%s" % (t, d, h)
 
-    # (14)
+    # (10) x
     for (t, d, h1, h2, h3) in term_days_hours_2:
         prob += idle_term_day_hour[t][d][h2] >= term_min_day_hour_event[t][d][h1] + term_min_day_hour_event[t][d][h3] - term_min_day_hour_event[t][d][h2] - 1, "Idle_time_%s_%s_in_term_%s_between_%s_%s" % (d, h2, t, h1, h3)
 
-    # (15)
+    # (11) x
     for (e1, e2, d, h) in conflict_indexes:
         prob += scheduled[e1][d][h] + scheduled[e2][d][h] <= 1 + conflict[e1][e2][d][h], "Activating_conflict_in_events_%s_and_%s_day_%s_and_hour_%s" % (e1, e2, d, h) 
 
-    # (16)
+    # (12) x
     for (t, d, h) in term_days_hours:
         prob += lpSum([ scheduled[e][d][h] for e in term_events[t] ]) <= 2 + exceding_term_day_hour[t][d][h], "Two_more_Events_are_scheduled_in_term_%s_at_%s_%s" % (t, d, h) # Arbitrary
-
-    # (17)
-    for (t, d) in teacher_day:
-        prob += lpSum([scheduled[et][d][h] for h in hours_days for et in teacher_events[t]]) <= 2, "Two_max_Events_are_scheduled_for_teacher_%s_at_%s" % (t, d) # Arbitrary
 
     # The problem data is written to an .lp file
     prob.writeLP("UniversityCouseTimetabling.lp")
