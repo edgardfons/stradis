@@ -37,7 +37,10 @@
                 <td>
                     {% for entrada in entradas[dia][periodo.id] %}
                         <div class="card text-dark bg-light mb-3">
-                            <div class="card-header fw-bold etapa-{{entrada.etapa}}">{{ entrada.disciplina.nome }}</div>
+                            <div class="card-header fw-bold etapa-{{entrada.etapa}}">
+                                <p>{{ entrada.disciplina.nome }}</p>
+                                <p>Prof: {{ entrada.professor.nome }}</p>
+                            </div>
                         </div>
                     {% endfor %}
                 </td>

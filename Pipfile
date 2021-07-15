@@ -19,6 +19,7 @@ python-dotenv = "*"
 gunicorn = "*"
 flask-wtf = "*"
 flask-migrate = "*"
+faker = "*"
 
 [requires]
 python_version = "3.8.5"

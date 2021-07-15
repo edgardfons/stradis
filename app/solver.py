@@ -228,10 +228,10 @@ def solve(conj):
         print('Solução otima não encontrada.')
 
 
-    return timetable( list(filter( lambda vari: vari.name.find("Scheduled") == 0 and vari.varValue != 0, prob.variables() )), conj )
+    return timetable( list(filter( lambda vari: vari.name.find("Scheduled") == 0 and vari.varValue != 0, prob.variables() )), conj, t1_stop-t1_start)
 
 
-def timetable(variables, conj):
+def timetable(variables, conj, tempo):
  
     grade_entradas = []
     # scheduled = [[ [0] * len(conj.horarios()) for i in range(len(conj.dias())) ] for j in range(len(conj.turmas()))]
@@ -253,5 +253,9 @@ def timetable(variables, conj):
             )
          )
 
-    return Grade(entradas=grade_entradas)
+    grade = Grade(entradas=grade_entradas)
+
+    grade.tempo=tempo
+
+    return grade
 
