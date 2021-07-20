@@ -16,7 +16,7 @@ for i in range(50):
     db.create_all()
     gerar(
         fake.random_int(40, 60),
-        fake.random_int(50, 100),
+        fake.random_int(50, 70),
         fake.random_int(8, 10),
     )
 

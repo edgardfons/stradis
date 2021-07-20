@@ -108,7 +108,7 @@ def turmas():
     Turma(codigo='1516', aulas_num=2, disciplina_id=2, professor_id=21, etapa=1, configs=turmas_block()).save()
     Turma(codigo='1517', aulas_num=2, disciplina_id=3, professor_id=20, etapa=1, configs=turmas_block()).save()
     Turma(codigo='1518', aulas_num=2, disciplina_id=4, professor_id=21, etapa=1, configs=turmas_block()).save()
-    Turma(codigo='1519', aulas_num=2, disciplina_id=5, professor_id=19, etapa=1, configs=turmas_block()).save()
+    Turma(codigo='1519', aulas_num=2, disciplina_id=5, professor_id=19, etapa=9, configs=turmas_block()).save()
     Turma(codigo='1520', aulas_num=2, disciplina_id=6, professor_id=17, etapa=1, configs=turmas_block()).save()
     Turma(codigo='1521', aulas_num=3, disciplina_id=7, professor_id=15, etapa=2, configs=turmas_block()).save()
     Turma(codigo='1522', aulas_num=2, disciplina_id=8, professor_id=19, etapa=2, configs=turmas_block()).save()
