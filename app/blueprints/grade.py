@@ -7,7 +7,7 @@ from app.utils import sql_date_format, sql_ilike_format, parse_date
 from app.models.periodo import Periodo, Dias
 
 PAGE = 1
-PER_PAGE = 5
+PER_PAGE = 10
 grade_bp = Blueprint('grade', __name__)
 
 @grade_bp.route('/', defaults={"page": 1}) 
@@ -21,7 +21,7 @@ def index(page):
 
     grades = grades.order_by(Grade.id.desc()).paginate(page, per_page=per_page, error_out=True)
 
-    return render_template('grades/index.html', grades=grades, grade_form=grade_form, grade_tab=True)
+    return render_template('grades/index.html', grades=grades, grade_form=grade_form, grade=GradeCreateForm(), grade_tab=True)
 
 @grade_bp.route('', methods=['POST'])
 def new():
@@ -55,7 +55,7 @@ def view(id, etapa):
 
     grade = Grade.query.get_or_404( id )
     entradas = {}
-    periodos = Periodo.query.order_by(Periodo.inicio.asc()).all()
+    periodos = Periodo.query.filter_by(instituicao_id=grade.instituicao_id).order_by(Periodo.inicio.asc()).all()
 
     for ent in grade.entradas:
         if not ent.dia in entradas.keys():

@@ -12,8 +12,6 @@ for i in range(50):
 
     print('---------------------------------- Interação ' + str(i) + ' ----------------------------------')
 
-    db.drop_all()
-    db.create_all()
     gerar(
         fake.random_int(40, 60),
         fake.random_int(50, 70),

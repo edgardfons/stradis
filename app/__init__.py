@@ -7,6 +7,8 @@ from flask import Flask, render_template
 from app.extensions import db, csrf, migrate
 from app.settings import config
 
+from app.models.instituicao import Instituicao
+
 from app.blueprints.turma import turma_bp
 from app.blueprints.periodo import periodo_bp
 from app.blueprints.professor import professor_bp

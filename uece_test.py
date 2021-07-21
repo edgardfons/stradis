@@ -7,8 +7,6 @@ ctx = app.app_context()
 ctx.push()
 
 for i in range(0, 20):
-    db.drop_all()
-    db.create_all()
     gerar()
 
 ctx.pop()

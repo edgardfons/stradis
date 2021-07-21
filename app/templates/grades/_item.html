@@ -1,0 +1,17 @@
+<tr>
+    <td class="text-center">{{ grade_item.id }}</td>
+    <td>{{ grade_item.semestre_letivo }}</td>    
+    <td>{{ grade_item.instituicao_id }}</td>
+    <td>{{ grade_item.criada }}</td>
+    <td>
+
+        <span class="d-flex items-center">
+            <a class="btn btn-custom btn-info" href="{{ url_for('.view', id=grade_item.id) }}">Visualizar</a>
+            <form method="POST" action="{{ url_for('.delete', id=grade_item.id) }}">
+                {{ grade.csrf_token }}
+                <button type="submit" class="btn btn-custom btn-danger">Remover</button>
+            </form>
+        </span>
+
+    </td>
+</tr>
